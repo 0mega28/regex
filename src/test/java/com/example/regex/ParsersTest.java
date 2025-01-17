@@ -29,4 +29,12 @@ class ParsersTest {
         var failedResult = charParser.parse("");
         assertEquals(Optional.empty(), failedResult);
     }
+
+    @Test
+    void numberParser() {
+        var numParser = Parsers.number();
+
+        assertEquals(1234, numParser.parse("1234abcd").orElseThrow().value());
+        assertEquals("abcd", numParser.parse("1234abcd").orElseThrow().remaining());
+    }
 }

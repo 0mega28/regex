@@ -133,6 +133,18 @@ class ParserCombinators {
     }
 
     public static Parser<List<Object>> zip(Parser<?> ...parsers) {
-        throw new UnsupportedOperationException();
+        return new Parser<>(input -> {
+            List<Object> result = new ArrayList<>();
+            String remaining = input;
+
+            for (Parser<?> parser : parsers) {
+                Optional<? extends ParseResult<?>> parseResult = parser.parse(remaining);
+                if (parseResult.isEmpty()) return Optional.empty();
+                result.add(parseResult.get().value());
+                remaining = parseResult.get().remaining();
+            }
+
+            return Optional.of(new ParseResult<>(result, remaining));
+        });
     }
 }

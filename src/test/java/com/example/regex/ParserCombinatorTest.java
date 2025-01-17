@@ -45,5 +45,11 @@ class ParserCombinatorTest {
         
         assertEquals(new RangeQuantifier(1, 3), rangeParser.parse("{1,3}").orElseThrow().value());
         assertEquals(Optional.empty(), rangeParser.parse("{1,3"));
+
+        var rangeParserWithDot = zip(string("{"), number(), string(","), number(), string("}"), string("."))
+            .map(result -> new RangeQuantifier((Integer) result.get(1), (Integer) result.get(3)));
+
+        assertEquals(new RangeQuantifier(1, 3), rangeParserWithDot.parse("{1,3}.").orElseThrow().value());
+        assertEquals(Optional.empty(), rangeParserWithDot.parse("{1,3}"));
     }
 }

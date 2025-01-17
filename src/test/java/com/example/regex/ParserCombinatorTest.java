@@ -4,13 +4,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static com.example.regex.Parsers.*;
+import static com.example.regex.ParserCombinators.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ParserCombinatorTest {
 
     @Test
     void filter() {
-        Parser<Character> aParser = Parsers.charParser();
+        Parser<Character> aParser = charParser();
 
         Optional<ParseResult<Character>> successResult = aParser.filter(c -> c == 'a').parse("abcd");
         assertEquals('a', successResult.get().value());
@@ -21,7 +23,7 @@ class ParserCombinatorTest {
 
     @Test
     void map() {
-        Parser<Character> aParser = Parsers.charParser();
+        Parser<Character> aParser = charParser();
 
         var result = aParser.map(c -> Character.getNumericValue(c)).parse("abcd");
         assertEquals(result.orElseThrow().value(), Character.getNumericValue('a'));
@@ -29,9 +31,19 @@ class ParserCombinatorTest {
 
     @Test
     void flatMap() {
-        Parser<Character> aParser = Parsers.charParser();
+        Parser<Character> aParser = charParser();
 
         Parser<Character> numParser = aParser.flatMap(c -> Parsers.digit());
         assertEquals('1', numParser.parse("21").orElseThrow().value());
+    }
+
+    @Test
+    void zipTest() {
+        record RangeQuantifier(int lowerBound, int upperBound) {}
+        var rangeParser = zip(string("{"), number(), string(","), number(), string("}"))
+            .map(result -> new RangeQuantifier(result.secondValue(), result.fourthValue()));
+        
+        assertEquals(new RangeQuantifier(1, 3), rangeParser.parse("{1,3}").orElseThrow().value());
+        assertEquals(Optional.empty(), rangeParser.parse("{1,3"));
     }
 }

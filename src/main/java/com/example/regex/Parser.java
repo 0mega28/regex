@@ -1,6 +1,7 @@
 package com.example.regex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -8,6 +9,18 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 record ParseResult<A>(A value, String remaining) {
+}
+
+record Double<A, B>(A firstValue, B secondValue) {
+}
+
+record Triple<A, B, C>(A firstValue, B secondValue, C thirdValue) {
+}
+
+record Quadruple<A, B, C, D>(A firstValue, B secondValue, C thirdValue, D fourthValue) {
+}
+
+record Quintiple<A, B, C, D, E>(A firstValue, B secondValue, C thirdValue, D fourthValue, E fifthValue) {
 }
 
 class ParseException extends RuntimeException {
@@ -90,5 +103,36 @@ class Parsers {
         return digit().oneOrMore().map(characters -> Integer.parseInt(
                 characters.stream().map(String::valueOf).collect(Collectors.joining()))
         );
+    }
+}
+
+class ParserCombinators {
+    public static <A, B> Parser<Double<A, B>> zip(Parser<A> first, Parser<B> second) {
+        return first
+                .flatMap(firstParseResult -> second.map(secondParseResult -> new Double<>(firstParseResult,
+                        secondParseResult)));
+    }
+
+    public static <A, B, C> Parser<Triple<A, B, C>> zip(Parser<A> first, Parser<B> second, Parser<C> third) {
+        return zip(first, zip(second, third))
+                .map(result -> new Triple<>(result.firstValue(), result.secondValue().firstValue(),
+                        result.secondValue().secondValue()));
+    }
+
+    public static <A, B, C, D> Parser<Quadruple<A, B, C, D>> zip(Parser<A> first, Parser<B> second, Parser<C> third, Parser<D> forth) {
+        return zip(zip(first, second), zip(third, forth))
+            .map(result -> new Quadruple<>(result.firstValue().firstValue(), result.firstValue().secondValue(),
+                                            result.secondValue().firstValue(), result.secondValue().secondValue()));
+    }
+
+    public static <A, B, C, D, E> Parser<Quintiple<A, B, C, D, E>> zip(Parser<A> first, Parser<B> second, Parser<C> third, Parser<D> forth, Parser<E> fifth) {
+        return zip(zip(first, second, third), zip(forth, fifth))
+            .map(result -> new Quintiple<>(result.firstValue().firstValue(), result.firstValue().secondValue(),
+                                           result.firstValue().thirdValue(), result.secondValue().firstValue(),
+                                           result.secondValue().secondValue()));
+    }
+
+    public static Parser<List<Object>> zip(Parser<?> ...parsers) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -156,4 +156,12 @@ class ParserCombinators {
             ));
         });
     }
+
+    public static <A, B> Parser<B> chooseSecond(Parser<A> first, Parser<B> second) {
+        return zip(first, second).map(result -> result.secondValue());
+    }
+
+    public static <A, B> Parser<A> chooseFirst(Parser<A> first, Parser<B> second) {
+        return zip(first, second).map(result -> result.firstValue());
+    }
 }

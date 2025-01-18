@@ -2,6 +2,7 @@ package com.example.regex;
 
 import org.junit.jupiter.api.Test;
 
+import java.lang.foreign.Linker.Option;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -63,6 +64,22 @@ class ParserCombinatorTest {
         
         assertEquals(new RangeQuantifier(1, OptionalInt.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());
         assertEquals(new RangeQuantifier(1, OptionalInt.empty()), rangeParser.parse("{1,}").orElseThrow().value());
+        assertEquals(Optional.empty(), rangeParser.parse("{1,3"));
+    }
+
+    @Test
+    void zipWithChooseCombinator() {
+        record RangeQuantifier(Integer lowerBound, Optional<Integer> upperBound) {}
+
+        var rangeParser = 
+                zip(
+                        chooseFirst(
+                                chooseSecond(string("{"), number()), string(",")),
+                        chooseFirst(optional(number()), string("}")))
+                .map(result -> new RangeQuantifier(result.firstValue(), result.secondValue()));
+
+        assertEquals(new RangeQuantifier(1, Optional.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());
+        assertEquals(new RangeQuantifier(1, Optional.empty()), rangeParser.parse("{1,}").orElseThrow().value());
         assertEquals(Optional.empty(), rangeParser.parse("{1,3"));
     }
 }

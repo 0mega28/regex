@@ -177,4 +177,16 @@ class ParserCombinators {
     public static <A, B> Parser<A> chooseFirst(Parser<A> first, Parser<B> second) {
         return zip(first, second).map(result -> result.firstValue());
     }
+
+    @SafeVarargs
+    public static <A> Parser<A> oneOf(Parser<A>... parsers) {
+        return new Parser<>(input -> {
+            for (Parser<A> parser : parsers) {
+                Optional<ParseResult<A>> result = parser.parse(input);
+                if (result.isPresent())
+                    return result;
+            }
+            return Optional.empty();
+        });
+    }
 }

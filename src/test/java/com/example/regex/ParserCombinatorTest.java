@@ -98,4 +98,13 @@ class ParserCombinatorTest {
         assertEquals(new RangeQuantifier(1, Optional.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());
         assertThrows(ParseException.class, () -> rangeParser.parse("{,3}").orElseThrow().value());
     }
+
+    @Test
+    void oneOfTest() {
+        var parser = oneOf(string("a"), string("b"), string("c"));
+        assertEquals(new ParseResult<>(null, "bcd"), parser.parse("abcd").orElseThrow());
+        assertEquals(new ParseResult<>(null, "cd"), parser.parse("bcd").orElseThrow());
+        assertEquals(new ParseResult<>(null, "d"), parser.parse("cd").orElseThrow());
+        assertEquals(Optional.empty(), parser.parse("d"));
+    }
 }

@@ -1,7 +1,6 @@
 package com.example.regex;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -145,6 +144,16 @@ class ParserCombinators {
             }
 
             return Optional.of(new ParseResult<>(result, remaining));
+        });
+    }
+
+    public static <A> Parser<Optional<A>> optional(Parser<A> parser) {
+        return new Parser<>(input -> {
+            Optional<ParseResult<A>> result = parser.parse(input);
+            return Optional.of(new ParseResult<>(
+                result.map(ParseResult::value),
+                result.map(ParseResult::remaining).orElse(input)
+            ));
         });
     }
 }

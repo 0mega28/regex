@@ -3,6 +3,7 @@ package com.example.regex;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import static com.example.regex.Parsers.*;
 import static com.example.regex.ParserCombinators.*;
@@ -51,5 +52,17 @@ class ParserCombinatorTest {
 
         assertEquals(new RangeQuantifier(1, 3), rangeParserWithDot.parse("{1,3}.").orElseThrow().value());
         assertEquals(Optional.empty(), rangeParserWithDot.parse("{1,3}"));
+    }
+
+    @Test
+    void zipWithOptional() {
+        record RangeQuantifier(int lowerBound, OptionalInt upperBound) {}
+        var rangeParser = zip(string("{"), number(), string(","), optional(number()), string("}"))
+            .map(result -> new RangeQuantifier(result.secondValue(), 
+                result.fourthValue().map(OptionalInt::of).orElse(OptionalInt.empty())));
+        
+        assertEquals(new RangeQuantifier(1, OptionalInt.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());
+        assertEquals(new RangeQuantifier(1, OptionalInt.empty()), rangeParser.parse("{1,}").orElseThrow().value());
+        assertEquals(Optional.empty(), rangeParser.parse("{1,3"));
     }
 }

@@ -83,4 +83,19 @@ class ParserCombinatorTest {
         assertEquals(new RangeQuantifier(1, Optional.empty()), rangeParser.parse("{1,}").orElseThrow().value());
         assertEquals(Optional.empty(), rangeParser.parse("{1,3"));
     }
+
+    @Test
+    void testThrows() {
+        record RangeQuantifier(int lowerBound, Optional<Integer> upperBound) {
+        }
+
+        var rangeParser = zip(
+                chooseFirst(
+                        chooseSecond(string("{"), number().orThrow("Range missing lower bound")), string(",")),
+                chooseFirst(optional(number()), string("}")))
+                .map(result -> new RangeQuantifier(result.firstValue(), result.secondValue()));
+
+        assertEquals(new RangeQuantifier(1, Optional.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());
+        assertThrows(ParseException.class, () -> rangeParser.parse("{,3}").orElseThrow().value());
+    }
 }

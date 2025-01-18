@@ -23,6 +23,10 @@ record Quintiple<A, B, C, D, E>(A firstValue, B secondValue, C thirdValue, D fou
 }
 
 class ParseException extends RuntimeException {
+
+    public ParseException(String message) {
+        super(message);
+    }
 }
 
 public class Parser<A> {
@@ -78,6 +82,13 @@ public class Parser<A> {
         return new Parser<>(input -> parseFunction.parse(input)
                 .flatMap(
                         parseResult -> mapper.apply(parseResult.value()).parseFunction.parse(parseResult.remaining())));
+    }
+
+    public Parser<A> orThrow(String message) {
+        return new Parser<>(input -> parseFunction.parse(input)
+                .or(() -> {
+                    throw new ParseException(message);
+                }));
     }
 }
 

@@ -2,7 +2,6 @@ package com.example.regex;
 
 import org.junit.jupiter.api.Test;
 
-import java.lang.foreign.Linker.Option;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -41,15 +40,16 @@ class ParserCombinatorTest {
 
     @Test
     void zipTest() {
-        record RangeQuantifier(int lowerBound, int upperBound) {}
+        record RangeQuantifier(int lowerBound, int upperBound) {
+        }
         var rangeParser = zip(string("{"), number(), string(","), number(), string("}"))
-            .map(result -> new RangeQuantifier(result.secondValue(), result.fourthValue()));
-        
+                .map(result -> new RangeQuantifier(result.secondValue(), result.fourthValue()));
+
         assertEquals(new RangeQuantifier(1, 3), rangeParser.parse("{1,3}").orElseThrow().value());
         assertEquals(Optional.empty(), rangeParser.parse("{1,3"));
 
         var rangeParserWithDot = zip(string("{"), number(), string(","), number(), string("}"), string("."))
-            .map(result -> new RangeQuantifier((Integer) result.get(1), (Integer) result.get(3)));
+                .map(result -> new RangeQuantifier((Integer) result.get(1), (Integer) result.get(3)));
 
         assertEquals(new RangeQuantifier(1, 3), rangeParserWithDot.parse("{1,3}.").orElseThrow().value());
         assertEquals(Optional.empty(), rangeParserWithDot.parse("{1,3}"));
@@ -57,11 +57,12 @@ class ParserCombinatorTest {
 
     @Test
     void zipWithOptional() {
-        record RangeQuantifier(int lowerBound, OptionalInt upperBound) {}
+        record RangeQuantifier(int lowerBound, OptionalInt upperBound) {
+        }
         var rangeParser = zip(string("{"), number(), string(","), optional(number()), string("}"))
-            .map(result -> new RangeQuantifier(result.secondValue(), 
-                result.fourthValue().map(OptionalInt::of).orElse(OptionalInt.empty())));
-        
+                .map(result -> new RangeQuantifier(result.secondValue(),
+                        result.fourthValue().map(OptionalInt::of).orElse(OptionalInt.empty())));
+
         assertEquals(new RangeQuantifier(1, OptionalInt.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());
         assertEquals(new RangeQuantifier(1, OptionalInt.empty()), rangeParser.parse("{1,}").orElseThrow().value());
         assertEquals(Optional.empty(), rangeParser.parse("{1,3"));
@@ -69,13 +70,13 @@ class ParserCombinatorTest {
 
     @Test
     void zipWithChooseCombinator() {
-        record RangeQuantifier(Integer lowerBound, Optional<Integer> upperBound) {}
+        record RangeQuantifier(Integer lowerBound, Optional<Integer> upperBound) {
+        }
 
-        var rangeParser = 
-                zip(
-                        chooseFirst(
-                                chooseSecond(string("{"), number()), string(",")),
-                        chooseFirst(optional(number()), string("}")))
+        var rangeParser = zip(
+                chooseFirst(
+                        chooseSecond(string("{"), number()), string(",")),
+                chooseFirst(optional(number()), string("}")))
                 .map(result -> new RangeQuantifier(result.firstValue(), result.secondValue()));
 
         assertEquals(new RangeQuantifier(1, Optional.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());

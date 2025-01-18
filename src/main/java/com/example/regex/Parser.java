@@ -48,7 +48,8 @@ public class Parser<A> {
 
             while (true) {
                 Optional<ParseResult<A>> result = parse(remaining);
-                if (result.isEmpty()) break;
+                if (result.isEmpty())
+                    break;
                 matches.add(result.get().value());
                 remaining = result.get().remaining();
             }
@@ -100,8 +101,7 @@ class Parsers {
 
     public static Parser<Integer> number() {
         return digit().oneOrMore().map(characters -> Integer.parseInt(
-                characters.stream().map(String::valueOf).collect(Collectors.joining()))
-        );
+                characters.stream().map(String::valueOf).collect(Collectors.joining())));
     }
 }
 
@@ -118,27 +118,30 @@ class ParserCombinators {
                         result.secondValue().secondValue()));
     }
 
-    public static <A, B, C, D> Parser<Quadruple<A, B, C, D>> zip(Parser<A> first, Parser<B> second, Parser<C> third, Parser<D> forth) {
+    public static <A, B, C, D> Parser<Quadruple<A, B, C, D>> zip(Parser<A> first, Parser<B> second, Parser<C> third,
+            Parser<D> forth) {
         return zip(zip(first, second), zip(third, forth))
-            .map(result -> new Quadruple<>(result.firstValue().firstValue(), result.firstValue().secondValue(),
-                                            result.secondValue().firstValue(), result.secondValue().secondValue()));
+                .map(result -> new Quadruple<>(result.firstValue().firstValue(), result.firstValue().secondValue(),
+                        result.secondValue().firstValue(), result.secondValue().secondValue()));
     }
 
-    public static <A, B, C, D, E> Parser<Quintiple<A, B, C, D, E>> zip(Parser<A> first, Parser<B> second, Parser<C> third, Parser<D> forth, Parser<E> fifth) {
+    public static <A, B, C, D, E> Parser<Quintiple<A, B, C, D, E>> zip(Parser<A> first, Parser<B> second,
+            Parser<C> third, Parser<D> forth, Parser<E> fifth) {
         return zip(zip(first, second, third), zip(forth, fifth))
-            .map(result -> new Quintiple<>(result.firstValue().firstValue(), result.firstValue().secondValue(),
-                                           result.firstValue().thirdValue(), result.secondValue().firstValue(),
-                                           result.secondValue().secondValue()));
+                .map(result -> new Quintiple<>(result.firstValue().firstValue(), result.firstValue().secondValue(),
+                        result.firstValue().thirdValue(), result.secondValue().firstValue(),
+                        result.secondValue().secondValue()));
     }
 
-    public static Parser<List<Object>> zip(Parser<?> ...parsers) {
+    public static Parser<List<Object>> zip(Parser<?>... parsers) {
         return new Parser<>(input -> {
             List<Object> result = new ArrayList<>();
             String remaining = input;
 
             for (Parser<?> parser : parsers) {
                 Optional<? extends ParseResult<?>> parseResult = parser.parse(remaining);
-                if (parseResult.isEmpty()) return Optional.empty();
+                if (parseResult.isEmpty())
+                    return Optional.empty();
                 result.add(parseResult.get().value());
                 remaining = parseResult.get().remaining();
             }
@@ -151,9 +154,8 @@ class ParserCombinators {
         return new Parser<>(input -> {
             Optional<ParseResult<A>> result = parser.parse(input);
             return Optional.of(new ParseResult<>(
-                result.map(ParseResult::value),
-                result.map(ParseResult::remaining).orElse(input)
-            ));
+                    result.map(ParseResult::value),
+                    result.map(ParseResult::remaining).orElse(input)));
         });
     }
 

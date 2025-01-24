@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 record ParseResult<A>(A value, String remaining) {
@@ -106,6 +107,18 @@ class Parsers {
 
     }
 
+    public static Parser<Character> charExcluding(String exluded) {
+        return charParser().filter(c -> exluded.indexOf(c) == -1);
+    }
+
+    public static Parser<Character> charFrom(String allowed) {
+        return charParser().filter(c -> allowed.indexOf(c) != -1);
+    }
+
+    public static Parser<List<Character>> stringExcluding(String excluded) {
+        return charExcluding(excluded).oneOrMore();
+    }
+
     public static Parser<Character> digit() {
         return charParser().filter(Character::isDigit);
     }
@@ -113,6 +126,16 @@ class Parsers {
     public static Parser<Integer> number() {
         return digit().oneOrMore().map(characters -> Integer.parseInt(
                 characters.stream().map(String::valueOf).collect(Collectors.joining())));
+    }
+
+    public static Parser<Void> end() {
+        return new Parser<Void>(input -> input.isEmpty()
+                ? Optional.of(new ParseResult<>(null, input))
+                : Optional.empty());
+    }
+
+    public static <A> Parser<A> lazy(Supplier<Parser<A>> parserSupplier) {
+        return new Parser<>(input -> parserSupplier.get().parse(input));
     }
 }
 

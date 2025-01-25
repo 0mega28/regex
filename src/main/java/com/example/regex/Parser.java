@@ -67,6 +67,14 @@ public class Parser<A> {
         return zeroOrMore().filter(Predicate.not(List::isEmpty));
     }
 
+    public Parser<Void> zeroOrThrow(String message) {
+        return new Parser<>(input -> {
+            Optional<ParseResult<A>> result = this.parse(input);
+            if (result.isEmpty()) return Optional.of(new ParseResult<>(null, input));
+            throw new ParseException(message);
+        });
+    }
+
     public Parser<A> filter(Predicate<A> predicate) {
         return new Parser<>(input -> {
             return parseFunction.parse(input)

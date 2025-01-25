@@ -49,4 +49,13 @@ class ParsersTest {
         assertTrue(Parsers.end().parse("").isPresent());
         assertFalse(Parsers.end().parse("a").isPresent());
     }
+
+    @Test
+    void zeroOrThrow() {
+        Parser<Void> invalidParser = Parsers.string("abc").zeroOrThrow("Should not contain 'abc'");
+
+        // Test case 1: Input is "abc"
+        assertThrows(ParseException.class, () -> invalidParser.parse("abc"));
+        assertTrue(invalidParser.parse("123").isPresent());
+    }
 }

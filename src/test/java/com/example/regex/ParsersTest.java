@@ -46,5 +46,7 @@ class ParsersTest {
         assertEquals("", endParser.parse("abcd").orElseThrow().remaining());
         assertEquals(Optional.empty(), endParser.parse("abcdef"));
         assertEquals(Optional.empty(), endParser.parse("abc"));
+        assertTrue(Parsers.end().parse("").isPresent());
+        assertFalse(Parsers.end().parse("a").isPresent());
     }
 }

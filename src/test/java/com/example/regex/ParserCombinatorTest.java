@@ -74,9 +74,9 @@ class ParserCombinatorTest {
         }
 
         var rangeParser = zip(
-                chooseFirst(
-                        chooseSecond(string("{"), number()), string(",")),
-                chooseFirst(optional(number()), string("}")))
+                first(
+                        second(string("{"), number()), string(",")),
+                first(optional(number()), string("}")))
                 .map(result -> new RangeQuantifier(result.firstValue(), result.secondValue()));
 
         assertEquals(new RangeQuantifier(1, Optional.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());
@@ -90,9 +90,9 @@ class ParserCombinatorTest {
         }
 
         var rangeParser = zip(
-                chooseFirst(
-                        chooseSecond(string("{"), number().orThrow("Range missing lower bound")), string(",")),
-                chooseFirst(optional(number()), string("}")))
+                first(
+                        second(string("{"), number().orThrow("Range missing lower bound")), string(",")),
+                first(optional(number()), string("}")))
                 .map(result -> new RangeQuantifier(result.firstValue(), result.secondValue()));
 
         assertEquals(new RangeQuantifier(1, Optional.of(3)), rangeParser.parse("{1,3}").orElseThrow().value());

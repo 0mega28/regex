@@ -17,7 +17,7 @@ public class Grammer {
 
     static final Parser<Alternation> alternationParser = zip(
             stringParser,
-            chooseSecond(Parsers.string("|"), stringParser).oneOrMore())
+            second(Parsers.string("|"), stringParser).oneOrMore())
             .map(result -> {
                 List<ASTNode> options = new ArrayList<>();
                 options.add(result.firstValue());

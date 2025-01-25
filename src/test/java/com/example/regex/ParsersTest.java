@@ -40,10 +40,11 @@ class ParsersTest {
 
     @Test
     void end() {
-        var endParser = Parsers.string("abcd").end();
+        var endParser = Parsers.string("abcd")
+            .flatMap(result -> Parsers.end().map(end -> result));
 
         assertEquals("", endParser.parse("abcd").orElseThrow().remaining());
-        assertThrows(ParseException.class, () -> endParser.parse("abcdef"));
-        assertThrows(ParseException.class, () -> endParser.parse("abc"));
+        assertEquals(Optional.empty(), endParser.parse("abcdef"));
+        assertEquals(Optional.empty(), endParser.parse("abc"));
     }
 }

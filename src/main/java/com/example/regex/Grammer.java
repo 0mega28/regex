@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Grammer {
-    static final Parser<ASTNode> parser = lazy(() -> Grammer.expressionParser).map(ASTNode.class::cast).end();
+    static final Parser<ASTNode> parser = lazy(() -> Grammer.expressionParser).map(ASTNode.class::cast)
+            .flatMap(result -> Parsers.end().map(end -> result));
 
     static final Parser<StringNode> stringParser = stringExcluding("()|*?+[]{}\\")
             .map(characterList -> new StringNode(

@@ -37,4 +37,13 @@ class ParsersTest {
         assertEquals(1234, numParser.parse("1234abcd").orElseThrow().value());
         assertEquals("abcd", numParser.parse("1234abcd").orElseThrow().remaining());
     }
+
+    @Test
+    void end() {
+        var endParser = Parsers.string("abcd").end();
+
+        assertEquals("", endParser.parse("abcd").orElseThrow().remaining());
+        assertThrows(ParseException.class, () -> endParser.parse("abcdef"));
+        assertThrows(ParseException.class, () -> endParser.parse("abc"));
+    }
 }

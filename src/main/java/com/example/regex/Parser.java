@@ -91,6 +91,19 @@ public class Parser<A> {
                     throw new ParseException(message);
                 }));
     }
+
+    public Parser<A> end() {
+        return new Parser<>(input -> parseFunction.parse(input)
+                .map(result -> {
+                    if (!result.remaining().isEmpty()) {
+                        throw new ParseException("Expected end of input");
+                    }
+                    return result;
+                })
+                .or(() -> {
+                    throw new ParseException("Expected end of input");
+                }));
+    }
 }
 
 class Parsers {
@@ -126,12 +139,6 @@ class Parsers {
     public static Parser<Integer> number() {
         return digit().oneOrMore().map(characters -> Integer.parseInt(
                 characters.stream().map(String::valueOf).collect(Collectors.joining())));
-    }
-
-    public static Parser<Void> end() {
-        return new Parser<Void>(input -> input.isEmpty()
-                ? Optional.of(new ParseResult<>(null, input))
-                : Optional.empty());
     }
 
     public static <A> Parser<A> lazy(Supplier<Parser<A>> parserSupplier) {

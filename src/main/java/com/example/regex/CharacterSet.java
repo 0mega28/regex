@@ -18,54 +18,36 @@ interface CharacterSet {
     }
 
     // Common predefined sets as static methods
-    static CharacterSet decimalDigit() {
-        return character -> Character.isDigit(character);
-    }
+    static CharacterSet decimalDigit = character -> Character.isDigit(character);
 
-    static CharacterSet whiteSpaces() {
-        return character -> Character.isWhitespace(character);
-    }
+    static CharacterSet whiteSpaces = character -> Character.isWhitespace(character);
 
-    static CharacterSet alphaNumeric() {
-        return character -> Character.isLetterOrDigit(character);
-    }
+    static CharacterSet alphaNumeric = character -> Character.isLetterOrDigit(character);
 
-    static CharacterSet word() {
-        return alphaNumeric().union(charactersIn("_"));
-    }
+    static CharacterSet word = alphaNumeric.union(charactersIn("_"));
 
-    static CharacterSet punctuationCharacters() {
-        return character -> {
-            var type = Character.getType(character);
-            return type == Character.CONNECTOR_PUNCTUATION ||
-                    type == Character.DASH_PUNCTUATION ||
-                    type == Character.START_PUNCTUATION ||
-                    type == Character.END_PUNCTUATION ||
-                    type == Character.OTHER_PUNCTUATION ||
-                    type == Character.INITIAL_QUOTE_PUNCTUATION ||
-                    type == Character.FINAL_QUOTE_PUNCTUATION;
-        };
-    }
+    static CharacterSet punctuationCharacters = character -> {
+        var type = Character.getType(character);
+        return type == Character.CONNECTOR_PUNCTUATION ||
+                type == Character.DASH_PUNCTUATION ||
+                type == Character.START_PUNCTUATION ||
+                type == Character.END_PUNCTUATION ||
+                type == Character.OTHER_PUNCTUATION ||
+                type == Character.INITIAL_QUOTE_PUNCTUATION ||
+                type == Character.FINAL_QUOTE_PUNCTUATION;
+    };
 
-    static CharacterSet capitalizedLetters() {
-        return character -> Character.isUpperCase(character);
-    }
+    static CharacterSet capitalizedLetters = character -> Character.isUpperCase(character);
 
-    static CharacterSet lowerCaseCharacters() {
-        return character -> Character.isLowerCase(character);
-    }
+    static CharacterSet lowerCaseCharacters = character -> Character.isLowerCase(character);
 
-    static CharacterSet nonBaseCharacters() {
-        return character -> Character.getType(character) == Character.NON_SPACING_MARK;
-    }
+    static CharacterSet nonBaseCharacters = character -> Character.getType(character) == Character.NON_SPACING_MARK;
 
-    static CharacterSet symbols() {
-        return character -> {
-            var type = Character.getType(character);
-            return type == Character.MATH_SYMBOL ||
-                    type == Character.CURRENCY_SYMBOL ||
-                    type == Character.MODIFIER_SYMBOL ||
-                    type == Character.OTHER_SYMBOL;
-        };
-    }
+    static CharacterSet symbols = character -> {
+        var type = Character.getType(character);
+        return type == Character.MATH_SYMBOL ||
+                type == Character.CURRENCY_SYMBOL ||
+                type == Character.MODIFIER_SYMBOL ||
+                type == Character.OTHER_SYMBOL;
+    };
 }

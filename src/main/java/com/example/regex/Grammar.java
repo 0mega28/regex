@@ -199,9 +199,9 @@ interface Grammar {
                         });
 
         Parser<AST> REGEX = zip(
-                        optional(string("^")),
+                        optionalb(string("^")),
                         first(Grammar.EXPRESSION, Grammar.END_OF_PATTERN))
-                        .map(result -> new AST(result.firstValue().isPresent(),
+                        .map(result -> new AST(result.firstValue(),
                                         result.secondValue()));
 
         static Unit flatten(List<Unit> children) {

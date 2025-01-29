@@ -7,7 +7,7 @@ class CharacterSetTest {
 
     @Test
     void testDecimalDigit() {
-        CharacterSet digits = new CharacterSet.DecimalDigit();
+        CharacterSet digits = CharacterSet.decimalDigit();
 
         assertTrue(digits.contains('0'));
         assertTrue(digits.contains('5'));
@@ -20,7 +20,7 @@ class CharacterSetTest {
 
     @Test
     void testWhiteSpaces() {
-        CharacterSet whitespaces = new CharacterSet.WhiteSpaces();
+        CharacterSet whitespaces = CharacterSet.whiteSpaces();
 
         assertTrue(whitespaces.contains(' '));
         assertTrue(whitespaces.contains('\t'));
@@ -33,7 +33,7 @@ class CharacterSetTest {
 
     @Test
     void testAlphaNumeric() {
-        CharacterSet alphanumeric = new CharacterSet.AlphaNumeric();
+        CharacterSet alphanumeric = CharacterSet.alphaNumeric();
 
         assertTrue(alphanumeric.contains('A'));
         assertTrue(alphanumeric.contains('z'));
@@ -46,7 +46,7 @@ class CharacterSetTest {
 
     @Test
     void testWord() {
-        CharacterSet word = new CharacterSet.Word();
+        CharacterSet word = CharacterSet.word();
 
         assertTrue(word.contains('A'));
         assertTrue(word.contains('z'));
@@ -60,7 +60,7 @@ class CharacterSetTest {
 
     @Test
     void testPunctuationCharacters() {
-        CharacterSet punctuation = new CharacterSet.PunctuationCharacters();
+        CharacterSet punctuation = CharacterSet.punctuationCharacters();
 
         assertTrue(punctuation.contains(','));
         assertTrue(punctuation.contains('.'));
@@ -76,7 +76,7 @@ class CharacterSetTest {
 
     @Test
     void testCapitalizedLetters() {
-        CharacterSet caps = new CharacterSet.CapitalizedLetters();
+        CharacterSet caps = CharacterSet.capitalizedLetters();
 
         assertTrue(caps.contains('A'));
         assertTrue(caps.contains('Z'));
@@ -88,7 +88,7 @@ class CharacterSetTest {
 
     @Test
     void testLowerCaseCharacters() {
-        CharacterSet lower = new CharacterSet.LowerCaseCharacters();
+        CharacterSet lower = CharacterSet.lowerCaseCharacters();
 
         assertTrue(lower.contains('a'));
         assertTrue(lower.contains('z'));
@@ -100,7 +100,7 @@ class CharacterSetTest {
 
     @Test
     void testNonBaseCharacters() {
-        CharacterSet nonBase = new CharacterSet.NonBaseCharacters();
+        CharacterSet nonBase = CharacterSet.nonBaseCharacters();
 
         // These are combining diacritical marks (Unicode category: NON_SPACING_MARK)
         assertTrue(nonBase.contains('\u0301')); // ´ (Acute accent)
@@ -115,7 +115,7 @@ class CharacterSetTest {
 
     @Test
     void testSymbols() {
-        CharacterSet symbols = new CharacterSet.Symbols();
+        CharacterSet symbols = CharacterSet.symbols();
 
         // Currency symbols
         assertTrue(symbols.contains('$'));
@@ -143,7 +143,7 @@ class CharacterSetTest {
 
     @Test
     void testUnion() {
-        CharacterSet letters = new CharacterSet.AlphaNumeric();
+        CharacterSet letters = CharacterSet.alphaNumeric();
         CharacterSet symbols = CharacterSet.charactersIn("@#");
 
         CharacterSet combined = letters.union(symbols);
@@ -159,7 +159,7 @@ class CharacterSetTest {
 
     @Test
     void testInverted() {
-        CharacterSet letters = new CharacterSet.AlphaNumeric();
+        CharacterSet letters = CharacterSet.alphaNumeric();
         CharacterSet nonLetters = letters.inverted();
 
         assertFalse(nonLetters.contains('A'));

@@ -84,15 +84,14 @@ public class GrammerTest {
         quantifiedExpression = (QuantifiedExpression) result8.get().value();
         assertTrue(quantifiedExpression.expression() instanceof Match.Character);
         assertTrue(quantifiedExpression.quantifier().isLazy());
-
         // test non parsing
         Optional<ParseResult<Unit>> result9 = parser.parse("b");
         assertFalse(result9.isPresent());
     }
 
     @Test
-    public void testEscapedAnchor() {
-        Parser<Anchor> parser = Grammer.ESCAPED_ANCHOR;
+    public void testAnchor() {
+        Parser<Anchor> parser = Grammer.ANCHOR;
         Optional<ParseResult<Anchor>> result = parser.parse("\\b");
 
         // test Word Bondary
@@ -103,15 +102,34 @@ public class GrammerTest {
         result = parser.parse("\\B");
         assertTrue(result.isPresent());
         assertEquals(Anchor.NON_WORD_BOUNDARY, result.get().value());
-    }
 
-    @Test
-    public void testAnchor() {
-        Parser<Anchor> parser = Grammer.ANCHOR;
-        Optional<ParseResult<Anchor>> result = parser.parse("$");
+        // test Start of String Only
+        result = parser.parse("\\A");
+        assertTrue(result.isPresent());
+        assertEquals(Anchor.START_OF_STRING_ONLY, result.get().value());
 
+        // test End of String Only
+        result = parser.parse("\\Z");
+        assertTrue(result.isPresent());
+        assertEquals(Anchor.END_OF_STRING_ONLY, result.get().value());
+
+        // test End of String Only Not Newline
+        result = parser.parse("\\z");
+        assertTrue(result.isPresent());
+        assertEquals(Anchor.END_OF_STRING_ONLY_NOT_NEWLINE, result.get().value());
+
+        // test Previous Match End
+        result = parser.parse("\\G");
+        assertTrue(result.isPresent());
+        assertEquals(Anchor.PREVIOUS_MATCH_END, result.get().value());
+
+        result = parser.parse("$");
         assertTrue(result.isPresent());
         assertEquals(Anchor.END_OF_STRING, result.get().value());
+
+        // test invalid
+        assertFalse(parser.parse("\\c").isPresent());
+        assertFalse(parser.parse("a").isPresent());
     }
 
     @Test

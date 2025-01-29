@@ -198,9 +198,18 @@ class ParserCombinators {
     public static <A> Parser<Optional<A>> optional(Parser<A> parser) {
         return new Parser<>(input -> {
             Optional<ParseResult<A>> result = parser.parse(input);
-            return Optional.of(new ParseResult<>(
-                    result.map(ParseResult::value),
-                    result.map(ParseResult::remaining).orElse(input)));
+            if (result.isEmpty())
+                return Optional.of(new ParseResult<>(Optional.empty(), input));
+            return Optional.of(new ParseResult<>(Optional.of(result.get().value()), result.get().remaining()));
+        });
+    }
+
+    public static <A> Parser<Boolean> optionalb(Parser<A> parser) {
+        return new Parser<>(input -> {
+            Optional<ParseResult<A>> result = parser.parse(input);
+            if (result.isEmpty())
+                return Optional.of(new ParseResult<>(false, input));
+            return Optional.of(new ParseResult<>(true, result.get().remaining()));
         });
     }
 

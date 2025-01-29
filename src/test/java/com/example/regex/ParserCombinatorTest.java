@@ -2,6 +2,7 @@ package com.example.regex;
 
 import org.junit.jupiter.api.Test;
 
+import java.lang.foreign.Linker.Option;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -106,5 +107,25 @@ class ParserCombinatorTest {
         assertEquals(new ParseResult<>(null, "cd"), parser.parse("bcd").orElseThrow());
         assertEquals(new ParseResult<>(null, "d"), parser.parse("cd").orElseThrow());
         assertEquals(Optional.empty(), parser.parse("d"));
+    }
+
+    @Test
+    void optionalTest() {
+        Parser<Boolean> optionalParser = ParserCombinators.optionalb(Parsers.string("abc"));
+
+        // Test case 1: Input is "abc"
+        Optional<ParseResult<Boolean>> result = optionalParser.parse("abc");
+        assertTrue(result.isPresent());
+        assertEquals(new ParseResult<>(true, ""), result.orElseThrow());
+
+        // Test case 2: Input is "abcdef"
+        result = optionalParser.parse("abcdef");
+        assertTrue(result.isPresent());
+        assertEquals(new ParseResult<>(true, "def"), result.orElseThrow());
+
+        // Test case 3: Input is "def"
+        result = optionalParser.parse("def");
+        assertTrue(result.isPresent());
+        assertEquals(new ParseResult<>(false, "def"), result.orElseThrow());
     }
 }

@@ -2,7 +2,6 @@ package com.example.regex;
 
 import org.junit.jupiter.api.Test;
 
-import java.lang.foreign.Linker.Option;
 import java.util.Optional;
 import java.util.OptionalInt;
 

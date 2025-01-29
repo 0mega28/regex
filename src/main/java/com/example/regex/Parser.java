@@ -195,6 +195,11 @@ class ParserCombinators {
         });
     }
 
+    /**
+     * Should not be used with {@link Parsers#string(String)} parser
+     * it'll throw {@link java.lang.RuntimeException} since, string parser always 
+     * return null parsed value.
+     */
     public static <A> Parser<Optional<A>> optional(Parser<A> parser) {
         return new Parser<>(input -> {
             Optional<ParseResult<A>> result = parser.parse(input);

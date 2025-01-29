@@ -6,7 +6,7 @@ import static com.example.regex.ParserCombinators.*;
 import java.util.List;
 import java.util.Optional;
 
-public interface Grammer {
+interface Grammer {
         String QUANTIFIERS = "*+?";
 
         static Parser<Unit> quantified(Parser<Unit> parser) {
@@ -136,13 +136,13 @@ public interface Grammer {
 
         Parser<CharacterGroup.Item> CHARACTER_GROUP_ITEM = oneOf(
                         string("/").zeroOrThrow("An unescaped delimeter must be escaped with a backslash")
-                                        .map(value -> (CharacterGroup.Item) null),
+                                        .map(value -> null),
                         CHARACTER_SET.map(CharacterGroup.Item.Set::new).map(value -> (CharacterGroup.Item) value),
-                        CHARACTER_RANGE.map(value -> (CharacterGroup.Item) value),
+                        CHARACTER_RANGE.map(value -> value),
                         ESCAPED_CHARACTER.map(CharacterGroup.Item.Character::new)
-                                        .map(value -> (CharacterGroup.Item) value),
+                                        .map(value -> value),
                         charExcluding("]").map(CharacterGroup.Item.Character::new)
-                                        .map(value -> (CharacterGroup.Item) value));
+                                        .map(value -> value));
 
         Parser<CharacterGroup> CHARACTER_GROUP = zip(
                         second(

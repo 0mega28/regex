@@ -372,7 +372,7 @@ public class GrammarTest {
         Optional<ParseResult<Match>> result = parser.parse(".");
 
         assertTrue(result.isPresent());
-        assertTrue(result.get().value() instanceof Match.AnyCharacter);
+        assertInstanceOf(Match.AnyCharacter.class, result.get().value());
     }
 
     @Test
@@ -381,7 +381,7 @@ public class GrammarTest {
         Optional<ParseResult<Unit>> result = parser.parse("a|b");
 
         assertTrue(result.isPresent());
-        assertTrue(result.get().value() instanceof Alternation);
+        assertInstanceOf(Alternation.class, result.get().value());
     }
 
     @Test
@@ -390,7 +390,7 @@ public class GrammarTest {
         Optional<ParseResult<Unit>> result = parser.parse("(a)");
 
         assertTrue(result.isPresent());
-        assertTrue(result.get().value() instanceof Group);
+        assertInstanceOf(Group.class, result.get().value());
     }
 
     @Test
@@ -401,6 +401,6 @@ public class GrammarTest {
         assertTrue(result.isPresent());
         AST ast = result.get().value();
         assertTrue(ast.isFromStartOfString());
-        assertTrue(ast.root() instanceof ImplicitGroup);
+        assertInstanceOf(ImplicitGroup.class, ast.root());
     }
 }

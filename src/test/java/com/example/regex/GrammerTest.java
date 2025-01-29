@@ -84,6 +84,10 @@ public class GrammerTest {
         quantifiedExpression = (QuantifiedExpression) result8.get().value();
         assertTrue(quantifiedExpression.expression() instanceof Match.Character);
         assertTrue(quantifiedExpression.quantifier().isLazy());
+
+        // test non parsing
+        Optional<ParseResult<Unit>> result9 = parser.parse("b");
+        assertFalse(result9.isPresent());
     }
 
     @Test

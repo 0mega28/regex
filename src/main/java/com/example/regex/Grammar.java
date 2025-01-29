@@ -6,7 +6,7 @@ import static com.example.regex.ParserCombinators.*;
 import java.util.List;
 import java.util.Optional;
 
-interface Grammer {
+interface Grammar {
         String QUANTIFIERS = "*+?";
 
         static Parser<Unit> quantified(Parser<Unit> parser) {
@@ -97,7 +97,7 @@ interface Grammer {
                                 default -> throw new ParseException("Unknown unicode category: " + name);
                         }));
 
-        // A unicode category, e.g. "\p{P}" - all punctuation characters.
+        // A Unicode category, e.g. "\p{P}" - all punctuation characters.
         Parser<CharacterSet> CHARACTER_CLASS_FROM_UNICODE_CATEGORY = zip(
                         second(
                                         string("\\"),
@@ -135,9 +135,9 @@ interface Grammer {
                         .map(result -> new CharacterGroup.Item.Range(result.firstValue(), result.secondValue()));
 
         Parser<CharacterGroup.Item> CHARACTER_GROUP_ITEM = oneOf(
-                        string("/").zeroOrThrow("An unescaped delimeter must be escaped with a backslash")
+                        string("/").zeroOrThrow("An unescaped delimiter must be escaped with a backslash")
                                         .map(value -> null),
-                        CHARACTER_SET.map(CharacterGroup.Item.Set::new).map(value -> (CharacterGroup.Item) value),
+                        CHARACTER_SET.map(CharacterGroup.Item.Set::new).map(value -> value),
                         CHARACTER_RANGE.map(value -> value),
                         ESCAPED_CHARACTER.map(CharacterGroup.Item.Character::new)
                                         .map(value -> value),
@@ -163,21 +163,21 @@ interface Grammer {
                         charExcluding(")|" + QUANTIFIERS).map(Match.Character::new));
 
         Parser<Unit> SUB_EXPRESSION = oneOf(
-                        quantified(lazy(() -> Grammer.GROUP).map(value -> (Unit) value)),
-                        ANCHOR.map(value -> (Unit) value),
-                        BACK_REFERENCE.map(value -> (Unit) value),
-                        quantified(MATCH.map(value -> (Unit) value)),
-                        charFrom(QUANTIFIERS).zeroOrThrow("The preceeding token is not quantifiable")
-                                        .map(value -> (Unit) null))
+                        quantified(lazy(() -> Grammar.GROUP).map(value -> value)),
+                        ANCHOR.map(value ->  value),
+                        BACK_REFERENCE.map(value ->  value),
+                        quantified(MATCH.map(value ->  value)),
+                        charFrom(QUANTIFIERS).zeroOrThrow("The preceding token is not quantifiable")
+                                        .map(value ->  null))
                         .oneOrMore()
                         .orThrow("Pattern must not be empty")
-                        .map(Grammer::flatten);
+                        .map(Grammar::flatten);
 
         Parser<Unit> EXPRESSION = zip(
                         SUB_EXPRESSION,
                         optional(
                                         second(string("|"),
-                                                        lazy(() -> Grammer.EXPRESSION))))
+                                                        lazy(() -> Grammar.EXPRESSION))))
                         .map(result -> {
                                 Unit lhs = result.firstValue();
                                 Optional<Unit> rhs = result.secondValue();
@@ -200,7 +200,7 @@ interface Grammer {
 
         Parser<AST> REGEX = zip(
                         optional(string("^")),
-                        first(Grammer.EXPRESSION, Grammer.END_OF_PATTERN))
+                        first(Grammar.EXPRESSION, Grammar.END_OF_PATTERN))
                         .map(result -> new AST(result.firstValue().isPresent(),
                                         result.secondValue()));
 

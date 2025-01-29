@@ -1,19 +1,19 @@
 
 package com.example.regex;
 
-import static com.example.regex.Grammer.CHARACTER_CLASS_FROM_UNICODE_CATEGORY;
+import static com.example.regex.Grammar.CHARACTER_CLASS_FROM_UNICODE_CATEGORY;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-public class GrammerTest {
+public class GrammarTest {
 
     @Test
     public void testQuantified() {
-        Parser<Unit> parser = Grammer.quantified(Parsers.string("a")
-                .map(value -> (Unit) new Match.Character('a')));
+        Parser<Unit> parser = Grammar.quantified(Parsers.string("a")
+                .map(value -> new Match.Character('a')));
 
         Optional<ParseResult<Unit>> result1 = parser.parse("a");
         assertTrue(result1.isPresent());
@@ -93,10 +93,10 @@ public class GrammerTest {
 
     @Test
     public void testAnchor() {
-        Parser<Anchor> parser = Grammer.ANCHOR;
+        Parser<Anchor> parser = Grammar.ANCHOR;
         Optional<ParseResult<Anchor>> result = parser.parse("\\b");
 
-        // test Word Bondary
+        // test Word Boundary
         assertTrue(result.isPresent());
         assertEquals(Anchor.WORD_BOUNDARY, result.get().value());
 
@@ -137,7 +137,7 @@ public class GrammerTest {
 
     @Test
     public void testBackReference() {
-        Parser<BackReference> parser = Grammer.BACK_REFERENCE;
+        Parser<BackReference> parser = Grammar.BACK_REFERENCE;
         Optional<ParseResult<BackReference>> result = parser.parse("\\1");
 
         assertTrue(result.isPresent());
@@ -156,7 +156,7 @@ public class GrammerTest {
 
     @Test
     public void testEscapedCharacter() {
-        Parser<Character> parser = Grammer.ESCAPED_CHARACTER;
+        Parser<Character> parser = Grammar.ESCAPED_CHARACTER;
         Optional<ParseResult<Character>> result = parser.parse("\\n");
 
         assertTrue(result.isPresent());
@@ -178,7 +178,7 @@ public class GrammerTest {
 
     @Test
     public void testRangeQuantifier() {
-        Parser<Quantifier.Type.Range> parser = Grammer.RANGE_QUANTIFIER;
+        Parser<Quantifier.Type.Range> parser = Grammar.RANGE_QUANTIFIER;
         Optional<ParseResult<Quantifier.Type.Range>> result = parser.parse("{2,3}");
 
         assertTrue(result.isPresent());
@@ -210,7 +210,7 @@ public class GrammerTest {
 
     @Test
     public void testCharacterClass() {
-        Parser<CharacterSet> parser = Grammer.CHARACTER_CLASS;
+        Parser<CharacterSet> parser = Grammar.CHARACTER_CLASS;
         Optional<ParseResult<CharacterSet>> result = parser.parse("\\d");
 
         assertTrue(result.isPresent());
@@ -251,7 +251,7 @@ public class GrammerTest {
 
     @Test
     public void testCharacterRange() {
-        Parser<CharacterGroup.Item.Range> parser = Grammer.CHARACTER_RANGE;
+        Parser<CharacterGroup.Item.Range> parser = Grammar.CHARACTER_RANGE;
         Optional<ParseResult<CharacterGroup.Item.Range>> result = parser.parse("a-z");
         assertTrue(result.isPresent());
         var range = result.get().value();
@@ -272,7 +272,7 @@ public class GrammerTest {
         Parser<CharacterGroup.Item> parser;
         Optional<ParseResult<CharacterGroup.Item>> result;
 
-        parser = Grammer.CHARACTER_GROUP_ITEM;
+        parser = Grammar.CHARACTER_GROUP_ITEM;
         result = parser.parse("a");
         assertTrue(result.isPresent());
         assertInstanceOf(CharacterGroup.Item.Character.class, result.get().value());
@@ -288,7 +288,7 @@ public class GrammerTest {
 
     @Test
     public void testCharacterGroup() {
-        Parser<CharacterGroup> parser = Grammer.CHARACTER_GROUP;
+        Parser<CharacterGroup> parser = Grammar.CHARACTER_GROUP;
         Optional<ParseResult<CharacterGroup>> result = parser.parse("[a-z]");
 
         assertTrue(result.isPresent());
@@ -368,7 +368,7 @@ public class GrammerTest {
 
     @Test
     public void testMatch() {
-        Parser<Match> parser = Grammer.MATCH;
+        Parser<Match> parser = Grammar.MATCH;
         Optional<ParseResult<Match>> result = parser.parse(".");
 
         assertTrue(result.isPresent());
@@ -377,7 +377,7 @@ public class GrammerTest {
 
     @Test
     public void testExpression() {
-        Parser<Unit> parser = Grammer.EXPRESSION;
+        Parser<Unit> parser = Grammar.EXPRESSION;
         Optional<ParseResult<Unit>> result = parser.parse("a|b");
 
         assertTrue(result.isPresent());
@@ -386,7 +386,7 @@ public class GrammerTest {
 
     @Test
     public void testGroup() {
-        Parser<Unit> parser = Grammer.GROUP;
+        Parser<Unit> parser = Grammar.GROUP;
         Optional<ParseResult<Unit>> result = parser.parse("(a)");
 
         assertTrue(result.isPresent());
@@ -395,7 +395,7 @@ public class GrammerTest {
 
     @Test
     public void testRegex() {
-        Parser<AST> parser = Grammer.REGEX;
+        Parser<AST> parser = Grammar.REGEX;
         Optional<ParseResult<AST>> result = parser.parse("^a$");
 
         assertTrue(result.isPresent());

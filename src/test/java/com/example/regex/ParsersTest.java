@@ -56,6 +56,7 @@ class ParsersTest {
 
         // Test case 1: Input is "abc"
         assertThrows(ParseException.class, () -> invalidParser.parse("abc"));
-        assertTrue(invalidParser.parse("123").isPresent());
+        assertTrue(invalidParser.parse("123").isEmpty());
+        assertTrue(invalidParser.parse("cde").isEmpty());
     }
 }

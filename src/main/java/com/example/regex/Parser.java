@@ -36,7 +36,7 @@ public class Parser<A> {
         Optional<ParseResult<A>> parse(String input) throws ParseException;
     }
 
-    private final ParseFunction<A> parseFunction;
+    protected final ParseFunction<A> parseFunction;
 
     Parser(ParseFunction<A> parseFunction) {
         this.parseFunction = parseFunction;
@@ -75,22 +75,25 @@ public class Parser<A> {
         });
     }
 
-    public Parser<A> filter(Predicate<A> predicate) {
+    public Parser<A> filter(Predicate<? super A> predicate) {
         return new Parser<>(input -> {
             return parseFunction.parse(input)
                     .filter(parseResult -> predicate.test(parseResult.value()));
         });
     }
 
-    public <B> Parser<B> map(Function<A, B> mapper) {
+    public <B> Parser<B> map(Function<? super A, ? extends B> mapper) {
         return new Parser<>(input -> parseFunction.parse(input)
                 .map(parseResult -> new ParseResult<B>(mapper.apply(parseResult.value()), parseResult.remaining())));
     }
 
-    public <B> Parser<B> flatMap(Function<A, Parser<B>> mapper) {
+    @SuppressWarnings("unchecked")
+    public <B> Parser<B> flatMap(Function<? super A, ? extends Parser<? extends B>> mapper) {
         return new Parser<>(input -> parseFunction.parse(input)
                 .flatMap(
-                        parseResult -> mapper.apply(parseResult.value()).parseFunction.parse(parseResult.remaining())));
+                        parseResult -> mapper.apply(parseResult.value())
+                        .parseFunction.parse(parseResult.remaining())
+                        .map(result -> (ParseResult<B>) result)));
     }
 
     public Parser<A> orThrow(String message) {

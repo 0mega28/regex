@@ -20,7 +20,7 @@ record Triple<A, B, C>(A firstValue, B secondValue, C thirdValue) {
 record Quadruple<A, B, C, D>(A firstValue, B secondValue, C thirdValue, D fourthValue) {
 }
 
-record Quintiple<A, B, C, D, E>(A firstValue, B secondValue, C thirdValue, D fourthValue, E fifthValue) {
+record Quintuple<A, B, C, D, E>(A firstValue, B secondValue, C thirdValue, D fourthValue, E fifthValue) {
 }
 
 class ParseException extends RuntimeException {
@@ -30,16 +30,10 @@ class ParseException extends RuntimeException {
     }
 }
 
-public class Parser<A> {
+record Parser<A>(ParseFunction<A> parseFunction) {
     @FunctionalInterface
     interface ParseFunction<A> {
         Optional<ParseResult<A>> parse(String input) throws ParseException;
-    }
-
-    protected final ParseFunction<A> parseFunction;
-
-    Parser(ParseFunction<A> parseFunction) {
-        this.parseFunction = parseFunction;
     }
 
     Optional<ParseResult<A>> parse(String input) throws ParseException {
@@ -74,15 +68,13 @@ public class Parser<A> {
     }
 
     public Parser<A> filter(Predicate<? super A> predicate) {
-        return new Parser<>(input -> {
-            return parseFunction.parse(input)
-                    .filter(parseResult -> predicate.test(parseResult.value()));
-        });
+        return new Parser<>(input -> parseFunction.parse(input)
+                .filter(parseResult -> predicate.test(parseResult.value())));
     }
 
     public <B> Parser<B> map(Function<? super A, ? extends B> mapper) {
         return new Parser<>(input -> parseFunction.parse(input)
-                .map(parseResult -> new ParseResult<B>(mapper.apply(parseResult.value()), parseResult.remaining())));
+                .map(parseResult -> new ParseResult<>(mapper.apply(parseResult.value()), parseResult.remaining())));
     }
 
     @SuppressWarnings("unchecked")
@@ -90,8 +82,8 @@ public class Parser<A> {
         return new Parser<>(input -> parseFunction.parse(input)
                 .flatMap(
                         parseResult -> mapper.apply(parseResult.value())
-                        .parseFunction.parse(parseResult.remaining())
-                        .map(result -> (ParseResult<B>) result)));
+                                .parseFunction().parse(parseResult.remaining())
+                                .map(result -> (ParseResult<B>) result)));
     }
 
     public Parser<A> orThrow(String message) {
@@ -104,20 +96,20 @@ public class Parser<A> {
 
 class Parsers {
     public static Parser<Void> string(String p) {
-        return new Parser<Void>(input -> input.startsWith(p)
+        return new Parser<>(input -> input.startsWith(p)
                 ? Optional.of(new ParseResult<>(null, input.substring(p.length())))
                 : Optional.empty());
     }
 
     public static Parser<Character> charParser() {
-        return new Parser<Character>(input -> !input.isEmpty()
+        return new Parser<>(input -> !input.isEmpty()
                 ? Optional.of(new ParseResult<>(input.charAt(0), input.substring(1)))
                 : Optional.empty());
 
     }
 
-    public static Parser<Character> charExcluding(String exluded) {
-        return charParser().filter(c -> exluded.indexOf(c) == -1);
+    public static Parser<Character> charExcluding(String excluded) {
+        return charParser().filter(c -> excluded.indexOf(c) == -1);
     }
 
     public static Parser<Character> charFrom(String allowed) {
@@ -168,10 +160,10 @@ class ParserCombinators {
                         result.secondValue().firstValue(), result.secondValue().secondValue()));
     }
 
-    public static <A, B, C, D, E> Parser<Quintiple<A, B, C, D, E>> zip(Parser<A> first, Parser<B> second,
-            Parser<C> third, Parser<D> forth, Parser<E> fifth) {
+    public static <A, B, C, D, E> Parser<Quintuple<A, B, C, D, E>> zip(Parser<A> first, Parser<B> second,
+                                                                       Parser<C> third, Parser<D> forth, Parser<E> fifth) {
         return zip(zip(first, second, third), zip(forth, fifth))
-                .map(result -> new Quintiple<>(result.firstValue().firstValue(), result.firstValue().secondValue(),
+                .map(result -> new Quintuple<>(result.firstValue().firstValue(), result.firstValue().secondValue(),
                         result.firstValue().thirdValue(), result.secondValue().firstValue(),
                         result.secondValue().secondValue()));
     }
@@ -201,27 +193,23 @@ class ParserCombinators {
     public static <A> Parser<Optional<A>> optional(Parser<A> parser) {
         return new Parser<>(input -> {
             Optional<ParseResult<A>> result = parser.parse(input);
-            if (result.isEmpty())
-                return Optional.of(new ParseResult<>(Optional.empty(), input));
-            return Optional.of(new ParseResult<>(Optional.of(result.get().value()), result.get().remaining()));
+            return result.map(aParseResult -> new ParseResult<>(Optional.of(aParseResult.value()), aParseResult.remaining())).or(() -> Optional.of(new ParseResult<>(Optional.empty(), input)));
         });
     }
 
     public static <A> Parser<Boolean> optionalb(Parser<A> parser) {
         return new Parser<>(input -> {
             Optional<ParseResult<A>> result = parser.parse(input);
-            if (result.isEmpty())
-                return Optional.of(new ParseResult<>(false, input));
-            return Optional.of(new ParseResult<>(true, result.get().remaining()));
+            return result.map(aParseResult -> new ParseResult<>(true, aParseResult.remaining())).or(() -> Optional.of(new ParseResult<>(false, input)));
         });
     }
 
     public static <A, B> Parser<B> second(Parser<A> first, Parser<B> second) {
-        return zip(first, second).map(result -> result.secondValue());
+        return zip(first, second).map(Double::secondValue);
     }
 
     public static <A, B> Parser<A> first(Parser<A> first, Parser<B> second) {
-        return zip(first, second).map(result -> result.firstValue());
+        return zip(first, second).map(Double::firstValue);
     }
 
     @SafeVarargs

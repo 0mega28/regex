@@ -16,7 +16,7 @@ class ParserCombinatorTest {
         Parser<Character> aParser = charParser();
 
         Optional<ParseResult<Character>> successResult = aParser.filter(c -> c == 'a').parse("abcd");
-        assertEquals('a', successResult.get().value());
+        assertEquals('a', successResult.orElseThrow().value());
 
         var failedResult = aParser.filter(c -> c == 'b').parse("abcd");
         assertEquals(failedResult, Optional.empty());
@@ -26,7 +26,7 @@ class ParserCombinatorTest {
     void map() {
         Parser<Character> aParser = charParser();
 
-        var result = aParser.map(c -> Character.getNumericValue(c)).parse("abcd");
+        var result = aParser.map(Character::getNumericValue).parse("abcd");
         assertEquals(result.orElseThrow().value(), Character.getNumericValue('a'));
     }
 

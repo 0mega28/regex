@@ -1,7 +1,9 @@
 
 package com.example.regex;
 
+import static com.example.regex.Grammer.CHARACTER_CLASS_FROM_UNICODE_CATEGORY;
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -129,6 +131,7 @@ public class GrammerTest {
 
         // test invalid
         assertFalse(parser.parse("\\c").isPresent());
+        assertFalse(parser.parse("\\").isPresent());
         assertFalse(parser.parse("a").isPresent());
     }
 
@@ -139,6 +142,16 @@ public class GrammerTest {
 
         assertTrue(result.isPresent());
         assertEquals(1, result.get().value().index());
+
+        result = parser.parse("\\10");
+        assertTrue(result.isPresent());
+        assertEquals(10, result.get().value().index());
+
+        // test invalid
+        assertFalse(parser.parse("\\").isPresent());
+        assertFalse(parser.parse("\0").isPresent());
+        assertFalse(parser.parse("").isPresent());
+        assertFalse(parser.parse("\\a").isPresent());
     }
 
     @Test
@@ -148,6 +161,19 @@ public class GrammerTest {
 
         assertTrue(result.isPresent());
         assertEquals('n', result.get().value());
+
+        result = parser.parse("\\t");
+        assertTrue(result.isPresent());
+        assertEquals('t', result.get().value());
+
+        result = parser.parse("\\1");
+        assertTrue(result.isPresent());
+        assertEquals('1', result.get().value());
+
+        // failed
+        assertFalse(parser.parse("a").isPresent());
+        assertFalse(parser.parse("/").isPresent());
+        assertThrows(ParseException.class, () -> parser.parse("\\").isPresent());
     }
 
     @Test
@@ -159,6 +185,27 @@ public class GrammerTest {
         Quantifier.Type.Range range = result.get().value();
         assertEquals(2, range.lowerBound());
         assertEquals(Optional.of(3), range.upperBound());
+
+        result = parser.parse("{2,}");
+        assertTrue(result.isPresent());
+        range = result.get().value();
+        assertEquals(2, range.lowerBound());
+        assertEquals(Optional.empty(), range.upperBound());
+
+        result = parser.parse("{3}");
+        assertTrue(result.isPresent());
+        range = result.get().value();
+        assertEquals(3, range.lowerBound());
+        assertEquals(Optional.of(3), range.upperBound());
+
+        // test failed
+        assertFalse(parser.parse("{,3}").isPresent());
+        assertFalse(parser.parse("{3").isPresent());
+        assertFalse(parser.parse("{3,").isPresent());
+        assertFalse(parser.parse("{}").isPresent());
+        assertFalse(parser.parse("}").isPresent());
+        assertFalse(parser.parse("{").isPresent());
+        assertFalse(parser.parse("").isPresent());
     }
 
     @Test
@@ -167,9 +214,78 @@ public class GrammerTest {
         Optional<ParseResult<CharacterSet>> result = parser.parse("\\d");
 
         assertTrue(result.isPresent());
-        assertTrue(result.get().value().contains('0'));
-        assertTrue(result.get().value().contains('9'));
+        assertEquals(CharacterSet.decimalDigit, result.get().value());
+
+        result = parser.parse("\\D");
+        assertTrue(result.isPresent());
+        assertTrue(result.get().value().contains('a'));
+        assertFalse(result.get().value().contains('1'));
+
+        result = parser.parse("\\w");
+        assertTrue(result.isPresent());
+        assertEquals(CharacterSet.word, result.get().value());
+
+        result = parser.parse("\\W");
+        assertTrue(result.isPresent());
+        assertFalse(result.get().value().contains('a'));
+        assertFalse(result.get().value().contains('1'));
+
+        result = parser.parse("\\s");
+        assertTrue(result.isPresent());
+        assertEquals(CharacterSet.whiteSpaces, result.get().value());
+
+        result = parser.parse("\\S");
+        assertTrue(result.isPresent());
+        assertTrue(result.get().value().contains('a'));
+        assertTrue(result.get().value().contains('1'));
+        assertFalse(result.get().value().contains(' '));
+        assertFalse(result.get().value().contains('\t'));
+
+        // invalid
+        assertTrue(parser.parse("\\p").isEmpty());
+        assertTrue(parser.parse("\\P").isEmpty());
+        assertTrue(parser.parse("\\").isEmpty());
+        assertTrue(parser.parse("a").isEmpty());
+        assertTrue(parser.parse("").isEmpty());
     }
+
+    @Test
+    public void testCharacterRange() {
+        Parser<CharacterGroup.Item.Range> parser = Grammer.CHARACTER_RANGE;
+        Optional<ParseResult<CharacterGroup.Item.Range>> result = parser.parse("a-z");
+        assertTrue(result.isPresent());
+        var range = result.get().value();
+        assertEquals('a', range.start());
+        assertEquals('z', range.end());
+
+        assertTrue(parser.parse("a-").isEmpty());
+        assertTrue(parser.parse("-z").isEmpty());
+        assertTrue(parser.parse("[a-b]").isEmpty());
+        assertTrue(parser.parse("[a-b").isEmpty());
+        assertTrue(parser.parse("[]").isEmpty());
+        assertTrue(parser.parse("-").isEmpty());
+        assertTrue(parser.parse("").isEmpty());
+    }
+
+    @Test
+    public void testCharacterGroupItem() {
+        Parser<CharacterGroup.Item> parser;
+        Optional<ParseResult<CharacterGroup.Item>> result;
+
+        parser = Grammer.CHARACTER_GROUP_ITEM;
+        result = parser.parse("a");
+        assertTrue(result.isPresent());
+        assertInstanceOf(CharacterGroup.Item.Character.class, result.get().value());
+        CharacterGroup.Item.Character character = (CharacterGroup.Item.Character) result.get().value();
+        assertEquals('a', character.character());
+
+        result = parser.parse("-");
+        assertTrue(result.isPresent());
+        assertInstanceOf(CharacterGroup.Item.Character.class, result.get().value());
+        character = (CharacterGroup.Item.Character) result.get().value();
+        assertEquals('-', character.character());
+    }
+
 
     @Test
     public void testCharacterGroup() {
@@ -180,7 +296,45 @@ public class GrammerTest {
         CharacterGroup group = result.get().value();
         assertFalse(group.isInverted());
         assertEquals(1, group.items().size());
-        assertTrue(group.items().get(0) instanceof CharacterGroup.Item.Range);
+        assertInstanceOf(CharacterGroup.Item.Range.class, group.items().getFirst());
+    }
+
+    @Test
+    void testValidUnicodeCategories() throws ParseException {
+        Parser<CharacterSet> parser = CHARACTER_CLASS_FROM_UNICODE_CATEGORY;
+        assertEquals(CharacterSet.punctuationCharacters, parser.parse("\\p{P}").map(ParseResult::value).orElseThrow());
+        assertEquals(CharacterSet.capitalizedLetters, parser.parse("\\p{Lt}").map(ParseResult::value).orElseThrow());
+        assertEquals(CharacterSet.lowerCaseCharacters, parser.parse("\\p{Ll}").map(ParseResult::value).orElseThrow());
+        assertEquals(CharacterSet.nonBaseCharacters, parser.parse("\\p{N}").map(ParseResult::value).orElseThrow());
+        assertEquals(CharacterSet.symbols, parser.parse("\\p{S}").map(ParseResult::value).orElseThrow());
+
+        // test inverted
+        CharacterSet set = parser.parse("\\P{P}").orElseThrow().value();
+        assertFalse(set.contains('.'));
+        assertFalse(set.contains('!'));
+        assertTrue(set.contains('A')); // A non-punctuation character
+
+        set = parser.parse("\\P{Lt}").orElseThrow().value();
+        assertTrue(set.contains('b')); // Lowercase letter
+
+        set = parser.parse("\\P{Ll}").orElseThrow().value();
+        assertFalse(set.contains('a'));
+        assertTrue(set.contains('A')); // Uppercase letter
+
+        set = parser.parse("\\P{N}").orElseThrow().value();
+        assertTrue(set.contains('1'));
+        assertTrue(set.contains('A')); // Non-numeric character
+
+        set = parser.parse("\\P{S}").orElseThrow().value();
+        assertFalse(set.contains('+'));
+        assertTrue(set.contains('b')); // A non-symbol character
+
+        // test invalid
+        assertThrows(ParseException.class, () -> parser.parse("\\p{XYZ}"));
+        assertThrows(ParseException.class, () -> parser.parse("\\pP}"));
+        assertThrows(ParseException.class, () -> parser.parse("\\p{P"));
+        assertThrows(ParseException.class, () -> parser.parse("\\p{}"));
+        assertFalse(parser.parse("\\q{P}").isPresent()); // 'q' is invalid
     }
 
     @Test

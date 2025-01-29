@@ -17,42 +17,42 @@ public class GrammerTest {
 
         Optional<ParseResult<Unit>> result1 = parser.parse("a");
         assertTrue(result1.isPresent());
-        assertTrue(result1.get().value() instanceof Match.Character);
+        assertInstanceOf(Match.Character.class, result1.get().value());
 
         // test *
         Optional<ParseResult<Unit>> result2 = parser.parse("a*");
         assertTrue(result2.isPresent());
-        assertTrue(result2.get().value() instanceof QuantifiedExpression);
+        assertInstanceOf(QuantifiedExpression.class, result2.get().value());
         QuantifiedExpression quantifiedExpression = (QuantifiedExpression) result2.get().value();
-        assertTrue(quantifiedExpression.expression() instanceof Match.Character);
-        assertTrue(quantifiedExpression.quantifier().type() instanceof Quantifier.Type.ZeroOrMore);
+        assertInstanceOf(Match.Character.class, quantifiedExpression.expression());
+        assertInstanceOf(Quantifier.Type.ZeroOrMore.class, quantifiedExpression.quantifier().type());
         assertFalse(quantifiedExpression.quantifier().isLazy());
 
         // test +
         Optional<ParseResult<Unit>> result3 = parser.parse("a+");
         assertTrue(result3.isPresent());
-        assertTrue(result3.get().value() instanceof QuantifiedExpression);
+        assertInstanceOf(QuantifiedExpression.class, result3.get().value());
         quantifiedExpression = (QuantifiedExpression) result3.get().value();
-        assertTrue(quantifiedExpression.expression() instanceof Match.Character);
-        assertTrue(quantifiedExpression.quantifier().type() instanceof Quantifier.Type.OneOrMore);
+        assertInstanceOf(Match.Character.class, quantifiedExpression.expression());
+        assertInstanceOf(Quantifier.Type.OneOrMore.class, quantifiedExpression.quantifier().type());
         assertFalse(quantifiedExpression.quantifier().isLazy());
 
         // test ?
         Optional<ParseResult<Unit>> result4 = parser.parse("a?");
         assertTrue(result4.isPresent());
-        assertTrue(result4.get().value() instanceof QuantifiedExpression);
+        assertInstanceOf(QuantifiedExpression.class, result4.get().value());
         quantifiedExpression = (QuantifiedExpression) result4.get().value();
-        assertTrue(quantifiedExpression.expression() instanceof Match.Character);
-        assertTrue(quantifiedExpression.quantifier().type() instanceof Quantifier.Type.ZeroOrOne);
+        assertInstanceOf(Match.Character.class, quantifiedExpression.expression());
+        assertInstanceOf(Quantifier.Type.ZeroOrOne.class, quantifiedExpression.quantifier().type());
         assertFalse(quantifiedExpression.quantifier().isLazy());
 
         // test range {1, 2}
         Optional<ParseResult<Unit>> result5 = parser.parse("a{1,2}");
         assertTrue(result5.isPresent());
-        assertTrue(result5.get().value() instanceof QuantifiedExpression);
+        assertInstanceOf(QuantifiedExpression.class, result5.get().value());
         quantifiedExpression = (QuantifiedExpression) result5.get().value();
-        assertTrue(quantifiedExpression.expression() instanceof Match.Character);
-        assertTrue(quantifiedExpression.quantifier().type() instanceof Quantifier.Type.Range);
+        assertInstanceOf(Match.Character.class, quantifiedExpression.expression());
+        assertInstanceOf(Quantifier.Type.Range.class, quantifiedExpression.quantifier().type());
         assertEquals(1, ((Quantifier.Type.Range) quantifiedExpression.quantifier().type()).lowerBound());
         assertEquals(Optional.of(2), ((Quantifier.Type.Range) quantifiedExpression.quantifier().type()).upperBound());
         assertFalse(quantifiedExpression.quantifier().isLazy());
@@ -60,10 +60,10 @@ public class GrammerTest {
         // test range {3}
         Optional<ParseResult<Unit>> result6 = parser.parse("a{3}");
         assertTrue(result6.isPresent());
-        assertTrue(result6.get().value() instanceof QuantifiedExpression);
+        assertInstanceOf(QuantifiedExpression.class, result6.get().value());
         quantifiedExpression = (QuantifiedExpression) result6.get().value();
-        assertTrue(quantifiedExpression.expression() instanceof Match.Character);
-        assertTrue(quantifiedExpression.quantifier().type() instanceof Quantifier.Type.Range);
+        assertInstanceOf(Match.Character.class, quantifiedExpression.expression());
+        assertInstanceOf(Quantifier.Type.Range.class, quantifiedExpression.quantifier().type());
         assertEquals(3, ((Quantifier.Type.Range) quantifiedExpression.quantifier().type()).lowerBound());
         assertEquals(Optional.of(3), ((Quantifier.Type.Range) quantifiedExpression.quantifier().type()).upperBound());
         assertFalse(quantifiedExpression.quantifier().isLazy());
@@ -71,10 +71,10 @@ public class GrammerTest {
         // test range {3,}
         Optional<ParseResult<Unit>> result7 = parser.parse("a{3,}");
         assertTrue(result7.isPresent());
-        assertTrue(result7.get().value() instanceof QuantifiedExpression);
+        assertInstanceOf(QuantifiedExpression.class, result7.get().value());
         quantifiedExpression = (QuantifiedExpression) result7.get().value();
-        assertTrue(quantifiedExpression.expression() instanceof Match.Character);
-        assertTrue(quantifiedExpression.quantifier().type() instanceof Quantifier.Type.Range);
+        assertInstanceOf(Match.Character.class, quantifiedExpression.expression());
+        assertInstanceOf(Quantifier.Type.Range.class, quantifiedExpression.quantifier().type());
         assertEquals(3, ((Quantifier.Type.Range) quantifiedExpression.quantifier().type()).lowerBound());
         assertEquals(Optional.empty(), ((Quantifier.Type.Range) quantifiedExpression.quantifier().type()).upperBound());
         assertFalse(quantifiedExpression.quantifier().isLazy());
@@ -82,9 +82,9 @@ public class GrammerTest {
         // test lazy
         Optional<ParseResult<Unit>> result8 = parser.parse("a+?");
         assertTrue(result8.isPresent());
-        assertTrue(result8.get().value() instanceof QuantifiedExpression);
+        assertInstanceOf(QuantifiedExpression.class, result8.get().value());
         quantifiedExpression = (QuantifiedExpression) result8.get().value();
-        assertTrue(quantifiedExpression.expression() instanceof Match.Character);
+        assertInstanceOf(Match.Character.class, quantifiedExpression.expression());
         assertTrue(quantifiedExpression.quantifier().isLazy());
         // test non parsing
         Optional<ParseResult<Unit>> result9 = parser.parse("b");
@@ -286,7 +286,6 @@ public class GrammerTest {
         assertEquals('-', character.character());
     }
 
-
     @Test
     public void testCharacterGroup() {
         Parser<CharacterGroup> parser = Grammer.CHARACTER_GROUP;
@@ -297,6 +296,36 @@ public class GrammerTest {
         assertFalse(group.isInverted());
         assertEquals(1, group.items().size());
         assertInstanceOf(CharacterGroup.Item.Range.class, group.items().getFirst());
+
+        result = parser.parse("[^a-z]");
+        assertTrue(result.isPresent());
+        group = result.get().value();
+        assertTrue(group.isInverted());
+        assertEquals(1, group.items().size());
+        assertInstanceOf(CharacterGroup.Item.Range.class, group.items().getFirst());
+
+        result = parser.parse("[^abc-d\\d\\a]");
+        assertTrue(result.isPresent());
+        group = result.get().value();
+        assertTrue(group.isInverted());
+        assertEquals(5, group.items().size());
+        assertInstanceOf(CharacterGroup.Item.Character.class, group.items().get(0));
+        assertInstanceOf(CharacterGroup.Item.Character.class, group.items().get(1));
+        assertInstanceOf(CharacterGroup.Item.Range.class, group.items().get(2));
+        assertInstanceOf(CharacterGroup.Item.Set.class, group.items().get(3));
+        assertInstanceOf(CharacterGroup.Item.Character.class, group.items().get(4));
+
+        assertEquals('a', ((CharacterGroup.Item.Character) group.items().get(0)).character());
+        assertEquals('b', ((CharacterGroup.Item.Character) group.items().get(1)).character());
+        var range = (CharacterGroup.Item.Range) group.items().get(2);
+        assertEquals('c', range.start());
+        assertEquals('d', range.end());
+        var set = (CharacterGroup.Item.Set) group.items().get(3);
+        assertEquals(CharacterSet.decimalDigit, set.set());
+        var escapedCharacter = (CharacterGroup.Item.Character) group.items().get(4);
+        assertEquals('a', escapedCharacter.character());
+
+        assertThrows(ParseException.class, () -> parser.parse("[]"));
     }
 
     @Test

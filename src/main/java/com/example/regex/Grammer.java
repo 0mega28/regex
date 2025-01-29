@@ -147,11 +147,11 @@ interface Grammer {
         Parser<CharacterGroup> CHARACTER_GROUP = zip(
                         second(
                                         string("["),
-                                        optional(string("^"))),
+                                        optionalb(string("^"))),
                         first(
                                         CHARACTER_GROUP_ITEM.oneOrMore().orThrow("Character group is empty"),
                                         string("]").orThrow("Character group missing closing square bracket")))
-                        .map(result -> new CharacterGroup(result.firstValue().isPresent(), result.secondValue()));
+                        .map(result -> new CharacterGroup(result.firstValue(), result.secondValue()));
 
         // Any subexpression that is used for matching against the input string, e.g.
         // "a" - matches a character, "[a-z]" – matches a character group, etc.

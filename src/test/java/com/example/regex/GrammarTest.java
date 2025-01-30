@@ -369,28 +369,61 @@ public class GrammarTest {
     @Test
     public void testMatch() {
         Parser<Match> parser = Grammar.MATCH;
-        Optional<ParseResult<Match>> result = parser.parse(".");
+        Optional<ParseResult<Match>> result;
 
+        result = parser.parse(".");
         assertTrue(result.isPresent());
         assertInstanceOf(Match.AnyCharacter.class, result.get().value());
+
+        result = parser.parse("[a]");
+        assertTrue(result.isPresent());
+        assertInstanceOf(Match.Group.class, result.get().value());
+
+        result = parser.parse("\\d");
+        assertTrue(result.isPresent());
+        assertInstanceOf(Match.Set.class, result.get().value());
+
+        result = parser.parse("\\a");
+        assertTrue(result.isPresent());
+        assertInstanceOf(Match.Character.class, result.get().value());
+
+        result = parser.parse("a");
+        assertTrue(result.isPresent());
+        assertInstanceOf(Match.Character.class, result.get().value());
+
+        // test invalid
+        assertTrue(parser.parse("").isEmpty());
     }
 
     @Test
     public void testExpression() {
         Parser<Unit> parser = Grammar.EXPRESSION;
-        Optional<ParseResult<Unit>> result = parser.parse("a|b");
+        Optional<ParseResult<Unit>> result;
 
+        result = parser.parse("a|b");
         assertTrue(result.isPresent());
         assertInstanceOf(Alternation.class, result.get().value());
+
+        result = parser.parse("a");
+        assertTrue(result.isPresent());
+        assertInstanceOf(Match.Character.class, result.get().value());
+
+        // invalid cases
+        assertThrows(ParseException.class, () -> parser.parse(""));
+        assertThrows(ParseException.class, () -> parser.parse("a|"));
+        assertThrows(ParseException.class, () -> parser.parse("|"));
     }
 
     @Test
     public void testGroup() {
         Parser<Unit> parser = Grammar.GROUP;
-        Optional<ParseResult<Unit>> result = parser.parse("(a)");
+        Optional<ParseResult<Unit>> result;
 
+        result = parser.parse("(a)");
         assertTrue(result.isPresent());
         assertInstanceOf(Group.class, result.get().value());
+
+        assertThrows(ParseException.class, () -> parser.parse("()"));
     }
 
     @Test

@@ -423,17 +423,37 @@ public class GrammarTest {
         assertTrue(result.isPresent());
         assertInstanceOf(Group.class, result.get().value());
 
+        result = parser.parse("(?:a)");
+        assertTrue(result.isPresent());
+        var value = (Group) result.get().value();
+        assertTrue(value.isCapturing());
+        assertEquals(new Match.Character('a'), value.children().getFirst());
+
+        assertThrows(ParseException.class, () -> parser.parse("(?a)"));
+
         assertThrows(ParseException.class, () -> parser.parse("()"));
     }
 
     @Test
     public void testRegex() {
         Parser<AST> parser = Grammar.REGEX;
-        Optional<ParseResult<AST>> result = parser.parse("^a$");
+        Optional<ParseResult<AST>> result;
 
+        result = parser.parse("^a$");
         assertTrue(result.isPresent());
         AST ast = result.get().value();
         assertTrue(ast.isFromStartOfString());
         assertInstanceOf(ImplicitGroup.class, ast.root());
+
+        assertTrue(parser.parse("a*b+c?").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("(ab|cd)*").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("[a-zA-Z_][a-zA-Z0-9_]*").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("\\d{2,4}-\\w+").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("^hello.*world$").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("([A-Z]+)\\1").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("(?:<=foo)bar").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("(?:<!abc)def").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("\\b\\w{5}\\b").orElseThrow().remaining().isEmpty());
+        assertTrue(parser.parse("\\s+").orElseThrow().remaining().isEmpty());
     }
 }

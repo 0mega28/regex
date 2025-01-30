@@ -1,4 +1,4 @@
-package com.example.regex;
+package com.example.regex.util;
 
 import java.util.List;
 import java.util.stream.Collectors;

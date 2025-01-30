@@ -1,6 +1,5 @@
-package com.example.regex;
+package com.example.regex.parser;
 
-import com.example.regex.parser.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

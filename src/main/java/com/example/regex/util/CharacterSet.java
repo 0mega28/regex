@@ -1,4 +1,4 @@
-package com.example.regex;
+package com.example.regex.util;
 
 @FunctionalInterface
 public interface CharacterSet {

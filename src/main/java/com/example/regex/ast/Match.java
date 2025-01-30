@@ -1,6 +1,6 @@
 package com.example.regex.ast;
 
-import com.example.regex.CharacterSet;
+import com.example.regex.util.CharacterSet;
 
 public interface Match extends Unit {
     record AnyCharacter() implements Match {

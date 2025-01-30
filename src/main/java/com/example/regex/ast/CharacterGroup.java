@@ -1,6 +1,6 @@
 package com.example.regex.ast;
 
-import com.example.regex.CharacterSet;
+import com.example.regex.util.CharacterSet;
 
 import java.util.List;
 

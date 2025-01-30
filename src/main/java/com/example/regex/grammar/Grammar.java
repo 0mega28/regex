@@ -1,7 +1,7 @@
 package com.example.regex.grammar;
 
-import com.example.regex.CharacterSet;
-import com.example.regex.Util;
+import com.example.regex.util.CharacterSet;
+import com.example.regex.util.Util;
 import com.example.regex.ast.*;
 import com.example.regex.parser.ParseException;
 import com.example.regex.parser.Parser;

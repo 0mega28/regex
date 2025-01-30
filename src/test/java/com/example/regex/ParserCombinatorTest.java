@@ -53,6 +53,14 @@ class ParserCombinatorTest {
 
         assertEquals(new RangeQuantifier(1, 3), rangeParserWithDot.parse("{1,3}.").orElseThrow().value());
         assertEquals(Optional.empty(), rangeParserWithDot.parse("{1,3}"));
+
+        Optional<ParseResult<Quadruple<Void, Character, Integer, Void>>> resultOp = zip(string("a"),
+                charParser(), number(), string("b"))
+                .parse("ac12b");
+        assertTrue(resultOp.isPresent());
+        var result = resultOp.get().value();
+        assertEquals('c', result.secondValue());
+        assertEquals(12, result.thirdValue());
     }
 
     @Test

@@ -189,12 +189,12 @@ interface Grammar {
         Parser<Unit> GROUP = zip(
                         second(
                                         string("("),
-                                        optional(string("?:"))),
+                                        optionalb(string("?:"))),
                         first(
                                         EXPRESSION,
                                         string(")").orThrow("Unmatched opening parenthesis")))
                         .map(result -> {
-                                boolean isCapturing = result.firstValue().isPresent();
+                                boolean isCapturing = result.firstValue();
                                 return new Group(Optional.empty(), isCapturing, List.of(result.secondValue()));
                         });
 

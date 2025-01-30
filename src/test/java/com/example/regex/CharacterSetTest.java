@@ -1,7 +1,9 @@
 package com.example.regex;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CharacterSetTest {
 
@@ -121,22 +123,22 @@ class CharacterSetTest {
         assertTrue(symbols.contains('$'));
         assertTrue(symbols.contains('₹'));
         assertTrue(symbols.contains('€'));
-    
+
         // Mathematical symbols
         assertTrue(symbols.contains('+'));
         // assertTrue(symbols.contains('-'));  // Only for proper math symbols, hyphen-minus is excluded
         assertTrue(symbols.contains('÷'));
         assertTrue(symbols.contains('∑'));
-    
+
         // Other symbols
         assertTrue(symbols.contains('©')); // Copyright symbol
         assertTrue(symbols.contains('™')); // Trademark symbol
-    
+
         // Regular characters should NOT be included in symbols
         assertFalse(symbols.contains('A'));
         assertFalse(symbols.contains('1'));
         assertFalse(symbols.contains('.'));
-    
+
         // Hyphen should not be considered a symbol (it is a punctuation mark)
         assertFalse(symbols.contains('-'));
     }

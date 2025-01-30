@@ -1,12 +1,17 @@
-
 package com.example.regex;
 
-import static com.example.regex.Grammar.CHARACTER_CLASS_FROM_UNICODE_CATEGORY;
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.example.regex.ast.*;
+import com.example.regex.grammar.Grammar;
+import com.example.regex.parser.ParseException;
+import com.example.regex.parser.ParseResult;
+import com.example.regex.parser.Parser;
+import com.example.regex.parser.Parsers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+
+import static com.example.regex.grammar.Grammar.CHARACTER_CLASS_FROM_UNICODE_CATEGORY;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GrammarTest {
 

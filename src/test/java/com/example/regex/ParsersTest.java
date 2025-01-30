@@ -1,5 +1,9 @@
 package com.example.regex;
 
+import com.example.regex.parser.ParseException;
+import com.example.regex.parser.ParseResult;
+import com.example.regex.parser.Parser;
+import com.example.regex.parser.Parsers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -41,7 +45,7 @@ class ParsersTest {
     @Test
     void end() {
         var endParser = Parsers.string("abcd")
-            .flatMap(result -> Parsers.end().map(end -> result));
+                .flatMap(result -> Parsers.end().map(end -> result));
 
         assertEquals("", endParser.parse("abcd").orElseThrow().remaining());
         assertEquals(Optional.empty(), endParser.parse("abcdef"));

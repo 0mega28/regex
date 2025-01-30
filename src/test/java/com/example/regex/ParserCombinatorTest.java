@@ -1,12 +1,13 @@
 package com.example.regex;
 
+import com.example.regex.parser.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import static com.example.regex.Parsers.*;
-import static com.example.regex.ParserCombinators.*;
+import static com.example.regex.parser.ParserCombinators.*;
+import static com.example.regex.parser.Parsers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ParserCombinatorTest {

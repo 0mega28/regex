@@ -1,6 +1,7 @@
 package com.example.regex.grammar;
 
 import com.example.regex.util.CharacterSet;
+import com.example.regex.util.Range;
 import com.example.regex.util.Util;
 import com.example.regex.ast.*;
 import com.example.regex.parser.ParseException;
@@ -45,7 +46,7 @@ public interface Grammar {
             string("\\"),
             charParser().orThrow("Pattern may not end with a trailing backslash"));
 
-    Parser<Quantifier.Type.Range> RANGE_QUANTIFIER = zip(
+    Parser<Quantifier.Type.range> RANGE_QUANTIFIER = zip(
             second(
                     string("{"),
                     number()),
@@ -59,13 +60,13 @@ public interface Grammar {
                 Integer lhs = result.firstValue();
                 Optional<Optional<Integer>> rhs = result.secondValue();
 
-                return new Quantifier.Type.Range(lhs, rhs.orElse(Optional.of(lhs)));
+                return new Quantifier.Type.range(lhs, rhs.orElse(Optional.of(lhs)));
             });
 
     Parser<Quantifier.Type> QUANTIFIER_TYPE = oneOf(
-            string("?").map(value -> new Quantifier.Type.ZeroOrOne()),
-            string("*").map(value -> new Quantifier.Type.ZeroOrMore()),
-            string("+").map(value -> new Quantifier.Type.OneOrMore()),
+            string("?").map(value -> new Quantifier.Type.zeroOrOne()),
+            string("*").map(value -> new Quantifier.Type.zeroOrMore()),
+            string("+").map(value -> new Quantifier.Type.oneOrMore()),
             RANGE_QUANTIFIER.map(value -> value));
 
     Parser<Quantifier> QUANTIFIER = zip(
@@ -107,11 +108,11 @@ public interface Grammar {
     Parser<CharacterGroup.Item> CHARACTER_GROUP_ITEM = oneOf(
             string("/").zeroOrThrow("An unescaped delimiter must be escaped with a backslash")
                     .map(value -> null),
-            CHARACTER_SET.map(CharacterGroup.Item.Set::new).map(value -> value),
+            CHARACTER_SET.map(CharacterGroup.Item.set::new).map(value -> value),
             lazy(() -> Grammar.CHARACTER_RANGE).map(value -> value),
-            ESCAPED_CHARACTER.map(CharacterGroup.Item.Character::new)
+            ESCAPED_CHARACTER.map(CharacterGroup.Item.character::new)
                     .map(value -> value),
-            charExcluding("]").map(CharacterGroup.Item.Character::new)
+            charExcluding("]").map(CharacterGroup.Item.character::new)
                     .map(value -> value));
 
     Parser<CharacterGroup> CHARACTER_GROUP = zip(
@@ -126,11 +127,11 @@ public interface Grammar {
     // Any subexpression that is used for matching against the input string, e.g.
     // "a" - matches a character, "[a-z]" – matches a character group, etc.
     Parser<Match> MATCH = oneOf(
-            string(".").map(value -> new Match.AnyCharacter()),
-            CHARACTER_GROUP.map(Match.Group::new),
-            CHARACTER_SET.map(Match.Set::new),
-            ESCAPED_CHARACTER.map(Match.Character::new),
-            charExcluding(")|" + QUANTIFIERS).map(Match.Character::new));
+            string(".").map(value -> new Match.anyCharacter()),
+            CHARACTER_GROUP.map(Match.group::new),
+            CHARACTER_SET.map(Match.set::new),
+            ESCAPED_CHARACTER.map(Match.character::new),
+            charExcluding(")|" + QUANTIFIERS).map(Match.character::new));
 
     Parser<CharacterSet> CHARACTER_CLASS = second(
             string("\\"),
@@ -146,12 +147,12 @@ public interface Grammar {
             }));
 
     // Character range e.g. a-z
-    Parser<CharacterGroup.Item.Range> CHARACTER_RANGE = zip(
+    Parser<CharacterGroup.Item.range> CHARACTER_RANGE = zip(
             first(
                     charExcluding("]"),
                     string("-")),
             charExcluding("]"))
-            .map(result -> new CharacterGroup.Item.Range(result.firstValue(), result.secondValue()));
+            .map(result -> new CharacterGroup.Item.range(new Range<>(result.firstValue(), result.secondValue())));
 
     static Parser<Unit> quantified(Parser<Unit> parser) {
         return zip(

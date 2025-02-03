@@ -1,6 +1,7 @@
 package com.example.regex.ast;
 
 import com.example.regex.util.CharacterSet;
+import com.example.regex.util.Range;
 
 import java.util.List;
 
@@ -10,14 +11,14 @@ public record CharacterGroup(boolean isInverted,
         items = List.copyOf(items);
     }
 
-    public interface Item {
-        record Character(char character) implements Item {
+    public sealed interface Item {
+        record character(char character) implements Item {
         }
 
-        record Range(char start, char end) implements Item {
+        record range(Range<Character> characterRange) implements Item {
         }
 
-        record Set(CharacterSet set) implements Item {
+        record set(CharacterSet set) implements Item {
         }
     }
 }

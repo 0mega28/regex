@@ -3,17 +3,17 @@ package com.example.regex.ast;
 import java.util.Optional;
 
 public record Quantifier(Type type, boolean isLazy) {
-    public interface Type {
-        record ZeroOrMore() implements Type {
+    public sealed interface Type {
+        record zeroOrMore() implements Type {
         }
 
-        record OneOrMore() implements Type {
+        record oneOrMore() implements Type {
         }
 
-        record ZeroOrOne() implements Type {
+        record zeroOrOne() implements Type {
         }
 
-        record Range(int lowerBound, Optional<Integer> upperBound) implements Type {
+        record range(int lowerBound, Optional<Integer> upperBound) implements Type {
         }
     }
 }

@@ -2,19 +2,19 @@ package com.example.regex.ast;
 
 import com.example.regex.util.CharacterSet;
 
-public interface Match extends Unit {
-    record AnyCharacter() implements Match {
+public sealed interface Match extends Unit {
+    record anyCharacter() implements Match {
     }
 
-    record Character(char character) implements Match {
+    record character(char character) implements Match {
     }
 
-    record String(String string) implements Match {
+    record string(String string) implements Match {
     }
 
-    record Set(CharacterSet set) implements Match {
+    record set(CharacterSet set) implements Match {
     }
 
-    record Group(CharacterGroup group) implements Match {
+    record group(CharacterGroup group) implements Match {
     }
 }

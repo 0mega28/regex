@@ -2,6 +2,7 @@ package com.example.regex.util;
 
 @FunctionalInterface
 public interface CharacterSet {
+    boolean contains(char character);
 
     // Common predefined sets as static methods
     CharacterSet decimalDigit = Character::isDigit;
@@ -33,7 +34,19 @@ public interface CharacterSet {
         return character -> allowed.indexOf(character) != -1;
     }
 
-    boolean contains(char character);
+    static CharacterSet fromChar(char character) {
+        return c -> c == character;
+    }
+
+    static CharacterSet fromRange(Range<Character> range) {
+        int lowerBound = range.lowerBound();
+        int upperBound = range.upperBound();
+        return c -> c >= lowerBound && c <= upperBound;
+    }
+
+    static CharacterSet empty() {
+        return character -> false;
+    }
 
     default CharacterSet union(CharacterSet other) {
         return character -> CharacterSet.this.contains(character) || other.contains(character);

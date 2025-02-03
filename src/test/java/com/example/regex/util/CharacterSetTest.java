@@ -171,4 +171,21 @@ class CharacterSetTest {
         assertTrue(nonLetters.contains(' '));
         assertTrue(nonLetters.contains('@'));
     }
+
+    @Test
+    void testFromChar() {
+        CharacterSet set = CharacterSet.fromChar('a');
+        assertTrue(set.contains('a'));
+        assertFalse(set.contains('b'));
+    }
+
+    @Test
+    void testFromRange() {
+        Range<Character> range = new Range<>('a', 'z');
+        CharacterSet set = CharacterSet.fromRange(range);
+        assertTrue(set.contains('a'));
+        assertTrue(set.contains('z'));
+        assertFalse(set.contains('A'));
+        assertFalse(set.contains('0'));
+    }
 }

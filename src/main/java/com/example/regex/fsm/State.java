@@ -1,6 +1,7 @@
 package com.example.regex.fsm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,6 +14,15 @@ public final class State {
 
     public void addTransition(Transition transition) {
         transitions.add(transition);
+    }
+
+    public void reverseTransition() {
+        Collections.reverse(transitions);
+    }
+
+    public void setTransitions(List<Transition> transitions) {
+        this.transitions.clear();
+        this.transitions.addAll(transitions);
     }
 
     @Override

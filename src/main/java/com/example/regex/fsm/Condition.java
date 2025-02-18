@@ -75,3 +75,11 @@ record MatchAnyCharacter(boolean includingNewLine) implements Condition {
                 .orElse(new rejected());
     }
 }
+
+record BackReference(int groupIndex) implements Condition{
+
+    @Override
+    public ConditionResult apply(Cursor cursor) {
+        throw new UnsupportedOperationException();
+    }
+}

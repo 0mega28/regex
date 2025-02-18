@@ -242,6 +242,30 @@ public final class FSM {
         return anchor(Predicate.not(Cursor::isAtWordBoundary));
     }
 
+    public static FSM concatenate(List<FSM> fsms) {
+        if (fsms.isEmpty()) return empty();
+        return fsms.stream()
+                .skip(1)
+                .reduce(fsms.getFirst(), FSM::concatenate);
+    }
+
+    public static FSM concatenate(FSM lhs, FSM rhs) {
+        lhs.end.setTransitions(List.of(epsilon(rhs.start)));
+        return new FSM(lhs.start, rhs.end);
+    }
+
+    public static FSM group(FSM child) {
+        FSM group = new FSM();
+        group.start.addTransition(epsilon(child.start));
+        child.end.addTransition(epsilon(group.end));
+        return group;
+    }
+
+    public static FSM backreference(int groupIndex) {
+        FSM backreference = new FSM();
+        backreference.start.addTransition(new Transition(backreference.end, new BackReference(groupIndex)));
+        return backreference;
+    }
 
     public State start() {
         return start;

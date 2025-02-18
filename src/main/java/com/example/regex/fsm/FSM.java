@@ -242,5 +242,14 @@ public final class FSM {
         return anchor(Predicate.not(Cursor::isAtWordBoundary));
     }
 
+
+    public State start() {
+        return start;
+    }
+
+    public State end() {
+        return end;
+    }
+
 }
 

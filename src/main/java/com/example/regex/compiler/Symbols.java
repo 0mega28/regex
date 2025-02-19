@@ -1,6 +1,5 @@
 package com.example.regex.compiler;
 
-import com.example.regex.ast.AST;
 import com.example.regex.ast.Unit;
 
 public class Symbols {

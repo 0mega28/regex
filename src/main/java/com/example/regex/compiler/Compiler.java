@@ -60,8 +60,8 @@ public class Compiler {
 
         if (group.isCapturing()) {
             captureGroups.add(new IRCaptureGroup(group.index().orElseThrow(),
-                            fsm.start(),
-                            fsm.end()));
+                    fsm.start(),
+                    fsm.end()));
         }
 
         return fsm;

@@ -1,11 +1,11 @@
 package com.example.regex.grammar;
 
-import com.example.regex.util.CharacterSet;
-import com.example.regex.util.Range;
-import com.example.regex.util.Util;
 import com.example.regex.ast.*;
 import com.example.regex.parser.ParseException;
 import com.example.regex.parser.Parser;
+import com.example.regex.util.CharacterSet;
+import com.example.regex.util.Range;
+import com.example.regex.util.Util;
 
 import java.util.List;
 import java.util.Optional;

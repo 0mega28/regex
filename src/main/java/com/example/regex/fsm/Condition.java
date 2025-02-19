@@ -76,7 +76,7 @@ record MatchAnyCharacter(boolean includingNewLine) implements Condition {
     }
 }
 
-record BackReference(int groupIndex) implements Condition{
+record BackReference(int groupIndex) implements Condition {
 
     @Override
     public ConditionResult apply(Cursor cursor) {

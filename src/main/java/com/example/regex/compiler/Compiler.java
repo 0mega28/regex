@@ -72,4 +72,19 @@ public class Compiler {
         return FSM.backreference(backReference.index());
     }
 
+    private FSM compile(Alternation alternation) {
+        throw new UnsupportedOperationException();
+    }
+
+    private FSM compile(Anchor anchor) {
+        throw new UnsupportedOperationException();
+    }
+
+    private FSM compile(QuantifiedExpression quantifiedExpression) {
+        throw new UnsupportedOperationException();
+    }
+
+    private FSM compile(Match match) {
+        throw new UnsupportedOperationException();
+    }
 }

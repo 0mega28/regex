@@ -4,6 +4,7 @@ import com.example.regex.ast.AST;
 import com.example.regex.compiler.CompiledRegex;
 import com.example.regex.compiler.CompiledState;
 import com.example.regex.compiler.Compiler;
+import com.example.regex.fsm.Cursor;
 import com.example.regex.grammar.Grammar;
 import com.example.regex.matcher.BacktrackingMatcher;
 import com.example.regex.matcher.Matching;
@@ -13,7 +14,9 @@ import com.example.regex.parser.ParseException;
 import com.example.regex.parser.ParseResult;
 import com.example.regex.parser.Parser;
 
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -75,6 +78,37 @@ public class Regex {
         }
     }
 
-    public class Match {
+    public static class Match {
+        String fullMatch;
+        List<String> groups;
+        int endIndex;
+
+        Match(Cursor cursor, boolean hasCaptureGroups) {
+            fullMatch = cursor.substring(cursor.startIndex(), cursor.index()).orElseThrow();
+
+            if (hasCaptureGroups) {
+                this.groups = cursor.groups()
+                        .entrySet()
+                        .stream()
+                        .sorted(Comparator.comparingInt(e -> e.getKey()))
+                        .map(e -> cursor.substring(e.getValue()).orElseThrow())
+                        .toList();
+            } else {
+                this.groups = List.of();
+            }
+            this.endIndex = cursor.index();
+        }
+
+        public String fullMatch() {
+            return fullMatch;
+        }
+
+        public int endIndex() {
+            return endIndex;
+        }
+
+        public List<String> groups() {
+            return List.copyOf(groups);
+        }
     }
 }

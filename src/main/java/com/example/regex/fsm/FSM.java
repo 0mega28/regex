@@ -6,8 +6,11 @@ import com.example.regex.ast.CharacterGroup.Item.range;
 import com.example.regex.ast.CharacterGroup.Item.set;
 import com.example.regex.util.CharacterSet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -275,5 +278,10 @@ public final class FSM {
         return end;
     }
 
+    public List<State> allStates() {
+        var states = new ArrayList<State>();
+        start.visit((state, level) -> states.add(state));
+        return states;
+    }
 }
 

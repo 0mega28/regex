@@ -13,7 +13,7 @@ import com.example.regex.parser.ParseException;
 import com.example.regex.parser.ParseResult;
 import com.example.regex.parser.Parser;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -21,24 +21,39 @@ public class Regex {
     private static final Logger LOGGER = Logger.getLogger(Regex.class.getName());
     public static final boolean DEBUG_ENABLED = true;
     private final CompiledRegex regex;
-    private final List<Options> options;
+    private final Options options;
 
     public static class Options {
+        private final HashSet<Option> optionSet;
+
+        public Options() {
+            optionSet = new HashSet<>();
+        }
+
+        public enum Option {
+            CASE_INSENSITIVE,
+            MULTILINE,
+            DOT_MATCHES_LINE_SEPARATORS,
+        }
+
+        public boolean contains(Option option) {
+            return optionSet.contains(option);
+        }
     }
 
-    public Regex(String pattern, List<Options> options) {
+    public Regex(String pattern, Options options) {
         AST ast = parse(pattern);
         AST optimizedAst = new Optimizer().optimize(ast);
         this.regex = new Compiler(optimizedAst, options).compile();
         this.options = options;
 
-        LOGGER.info(() -> "AST: \n" + ast.getDescription());
-        LOGGER.info(() -> "AST (Optimized): \n" + optimizedAst.getDescription());
+        LOGGER.info(() -> "AST: \n" + ast.description());
+        LOGGER.info(() -> "AST (Optimized): \n" + optimizedAst.description());
         LOGGER.info(() -> "Expression: \n" + regex.symbols().description(new CompiledState(0)));
     }
 
     public Regex(String pattern) {
-        this(pattern, List.of());
+        this(pattern, new Options());
     }
 
     static AST parse(String pattern) {

@@ -5,10 +5,10 @@ import java.util.function.BiConsumer;
 public record AST(boolean isFromStartOfString, Unit root) {
     @Override
     public String toString() {
-        return getDescription();
+        return description();
     }
 
-    public String getDescription() {
+    public String description() {
         StringBuilder sb = new StringBuilder();
         BiConsumer<Unit, Integer> visitor = (unit, level) -> {
             String indent = " ".repeat(level * 2);
@@ -27,6 +27,10 @@ public record AST(boolean isFromStartOfString, Unit root) {
                 visit(child, level + 1, visitor);
             }
         }
+    }
+
+    public String description(Unit unit) {
+        return unit.toString();
     }
 }
 

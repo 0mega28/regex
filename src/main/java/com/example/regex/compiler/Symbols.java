@@ -1,9 +1,13 @@
 package com.example.regex.compiler;
 
+import com.example.regex.Regex;
+import com.example.regex.ast.AST;
 import com.example.regex.ast.Unit;
 
+import java.util.Map;
+
 public class Symbols {
-    static class Details {
+    public static class Details {
         Unit unit;
         boolean isEnd;
 
@@ -11,25 +15,35 @@ public class Symbols {
             this.unit = unit;
             this.isEnd = isEnd;
         }
+    }
+    private final AST ast;
+    private final Map<CompiledState, Details> map;
 
+    public Symbols(AST ast, Map<CompiledState, Details> map) {
+        this.ast = ast;
+        this.map = map;
     }
 
-    public String description(CompiledState state) {
-        /*
-            func description(for state: CompiledState) -> String {
-            #if DEBUG
-            let details = map[state]
+    public Symbols() {
+        ast = null;
+        map = null;
+    }
 
-            let info: String? = details.flatMap {
-                return "\($0.isEnd ? "End" : "Start"), \(ast.description(for: $0.unit))"
+
+    public String description(CompiledState state) {
+        if (Regex.DEBUG_ENABLED) {
+            assert map != null;
+            assert ast != null;
+            Details details = map.get(state);
+
+            if (details == null) {
+                return "(" + state + ") [<symbol missing>]";
             }
 
-            return "\(state) [\(info ?? "<symbol missing>")]"
-            #else
-            return "\(state) [<symbol missing>]"
-            #endif
+            String info = details.isEnd ? "End" : "Start";
+            return "(" + state + ") [" + info + ", " + ast.description(details.unit) + "]";
         }
-         */
-        throw new UnsupportedOperationException();
+
+        return "(" + state + ") [<symbol missing>]";
     }
 }

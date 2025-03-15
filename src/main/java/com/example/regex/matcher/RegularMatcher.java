@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class RegularMatcher implements Matching {
-    public RegularMatcher(String string, CompiledRegex regex, List<Regex.Options> options, boolean isMatchOnly) {
+    public RegularMatcher(String string, CompiledRegex regex, Regex.Options options, boolean isMatchOnly) {
     }
 
     @Override

@@ -1,4 +1,4 @@
 package com.example.regex.compiler;
 
-public class CompiledCaptureGroup {
+public record CompiledCaptureGroup(int index, CompiledState start, CompiledState end) {
 }

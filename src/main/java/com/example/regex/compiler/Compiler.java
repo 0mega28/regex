@@ -11,19 +11,19 @@ import java.util.Map;
 
 public class Compiler {
     private final AST ast;
-    private final Regex.Options options;
+    private final List<Regex.Options> options;
     private Map<State, Symbols.Details> map;
     private final List<IRCaptureGroup> captureGroups;
     private final List<BackReference> backReferences;
 
-    Compiler(AST ast, Regex.Options options) {
+    public Compiler(AST ast, List<Regex.Options> options) {
         this.ast = ast;
         this.options = options;
         captureGroups = new ArrayList<>();
         backReferences = new ArrayList<>();
     }
 
-    CompiledRegex _compile() {
+    public CompiledRegex compile() {
         throw new UnsupportedOperationException();
     }
 
